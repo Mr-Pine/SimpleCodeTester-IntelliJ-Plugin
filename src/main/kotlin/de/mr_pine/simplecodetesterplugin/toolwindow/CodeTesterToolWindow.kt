@@ -1,4 +1,4 @@
-package de.mrpine.simplecodetesterplugin.toolwindow
+package de.mr_pine.simplecodetesterplugin.toolwindow
 
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.openapi.util.text.HtmlChunk.span
