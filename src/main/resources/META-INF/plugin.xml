@@ -36,5 +36,14 @@
                 description="Log in to the SimpleCodeTester">
             <add-to-group group-id="de.mr_pine.simplecodetesterplugin.actions.CodeTesterActions"/>
         </action>
+        <action id="de.mr_pine.simplecodetesterplugin.actions.CodeTesterGetCategoriesAction"
+                class="de.mr_pine.simplecodetesterplugin.actions.CodeTesterGetCategoriesAction" text="Get Categories">
+            <add-to-group group-id="de.mr_pine.simplecodetesterplugin.actions.CodeTesterActions"/>
+        </action>
+        <action id="de.mr_pine.simplecodetesterplugin.actions.CodeTesterLogoutAction"
+                class="de.mr_pine.simplecodetesterplugin.actions.CodeTesterLogoutAction"
+                text="Log out of the CodeTester">
+            <add-to-group group-id="de.mr_pine.simplecodetesterplugin.actions.CodeTesterActions"/>
+        </action>
     </actions>
 </idea-plugin>

@@ -13,7 +13,7 @@ object CodeTesterCredentials {
         )
     }
 
-    private fun setCredentials(credentialType: CredentialType, value: String) {
+    private fun setCredentials(credentialType: CredentialType, value: String?) {
         val credentialAttributes = createCredentialAttributes(credentialType)
         val credentials = Credentials(value)
         PasswordSafe.instance[credentialAttributes] = credentials
@@ -26,7 +26,7 @@ object CodeTesterCredentials {
     }
 
     operator fun get(credentialType: CredentialType) = getCredentials(credentialType)
-    operator fun set(credentialType: CredentialType, value: String) = setCredentials(credentialType, value)
+    operator fun set(credentialType: CredentialType, value: String?) = setCredentials(credentialType, value)
 
     enum class CredentialType {
         REFRESH_TOKEN, ACCESS_TOKEN
