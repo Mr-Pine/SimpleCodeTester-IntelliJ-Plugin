@@ -24,6 +24,17 @@
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow factoryClass="de.mr_pine.simplecodetesterplugin.toolwindow.CodeTesterToolWindowFactory" id="SimpleCodeTester"/>
+        <!--toolWindow factoryClass="de.mr_pine.simplecodetesterplugin.toolwindow.CodeTesterToolWindowFactory" id="SimpleCodeTester"/-->
+
     </extensions>
+    <actions>
+        <group id="de.mr_pine.simplecodetesterplugin.actions.CodeTesterActions" text="CodeTester" popup="true">
+            <add-to-group group-id="ToolsMenu"/>
+        </group>
+        <action id="de.mr_pine.simplecodetesterplugin.actions.CodeTesterLoginAction"
+                class="de.mr_pine.simplecodetesterplugin.actions.CodeTesterLoginAction" text="CodeTester Login"
+                description="Log in to the SimpleCodeTester">
+            <add-to-group group-id="de.mr_pine.simplecodetesterplugin.actions.CodeTesterActions"/>
+        </action>
+    </actions>
 </idea-plugin>
