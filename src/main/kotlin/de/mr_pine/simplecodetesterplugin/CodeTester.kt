@@ -1,7 +1,10 @@
 package de.mr_pine.simplecodetesterplugin
 
+import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.LogLevel
 import com.intellij.openapi.diagnostic.Logger
+import de.mr_pine.simplecodetesterplugin.actions.CodeTesterGetCategoriesAction
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.auth.*
@@ -51,10 +54,6 @@ object CodeTester {
         }
     }
 
-    init {
-        logger.info("refreshToken: ${CodeTesterCredentials[CodeTesterCredentials.CredentialType.REFRESH_TOKEN].toString()}")
-    }
-
     @Serializable
     private data class TokenInfo(
         val token: String,
@@ -73,6 +72,7 @@ object CodeTester {
         ).body()
 
         CodeTesterCredentials[CodeTesterCredentials.CredentialType.REFRESH_TOKEN] = loginInfo.token
+        loginListeners.forEach { ApplicationManager.getApplication().invokeLater(it) }
         logger.debug("Login: ${loginInfo.token}")
     }
 
@@ -84,22 +84,50 @@ object CodeTester {
     val loggedIn: Boolean
         get() = CodeTesterCredentials[CodeTesterCredentials.CredentialType.REFRESH_TOKEN] != null
 
+    private val loginListeners: MutableList<() -> Unit> = mutableListOf(
+        {
+            CodeTesterGetCategoriesAction().actionPerformed(
+                AnActionEvent(
+                    null,
+                    DataContext.EMPTY_CONTEXT,
+                    ActionPlaces.UNKNOWN,
+                    Presentation(),
+                    ActionManager.getInstance(),
+                    0
+                )
+            )
+        }
+    )
+
+    val registerLoginListener: (() -> Unit) -> Boolean = loginListeners::add
+
     fun logOut() {
         CodeTesterCredentials[CodeTesterCredentials.CredentialType.REFRESH_TOKEN] = null
         CodeTesterCredentials[CodeTesterCredentials.CredentialType.ACCESS_TOKEN] = null
+        categories = listOf()
+
+        logoutListeners.forEach { ApplicationManager.getApplication().invokeLater(it) }
     }
 
+    private val logoutListeners: MutableList<() -> Unit> = mutableListOf()
+    val registerLogoutListener: (() -> Unit) -> Boolean = logoutListeners::add
+
     suspend fun getCategories() {
-        val categories: List<CategoryData> = client.get(
+        categories = client.get(
             "$url/check-category/get-all"
-        ).body()
+        ).body<List<TestCategory>>().reversed()
 
         logger.warn(categories.toString())
     }
 
-    @Serializable
-    private data class CategoryData(
-        val id: Int,
-        val name: String
-    )
+    var categories: List<TestCategory> = listOf()
+    var currentCategory: TestCategory? = null
+
+    init {
+        logger.info("refreshToken: ${CodeTesterCredentials[CodeTesterCredentials.CredentialType.REFRESH_TOKEN].toString()}")
+
+        if(CodeTesterCredentials[CodeTesterCredentials.CredentialType.REFRESH_TOKEN] != null) loginListeners.forEach {
+            ApplicationManager.getApplication().invokeLater(it)
+        }
+    }
 }

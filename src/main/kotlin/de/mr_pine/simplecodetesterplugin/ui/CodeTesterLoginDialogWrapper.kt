@@ -5,7 +5,6 @@ import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
 import javax.swing.JComponent
-import javax.swing.JPasswordField
 
 class CodeTesterLoginDialogWrapper: DialogWrapper(true) {
 
@@ -18,14 +17,13 @@ class CodeTesterLoginDialogWrapper: DialogWrapper(true) {
     }
 
     override fun createCenterPanel(): JComponent = panel {
-        val passwordField = JPasswordField()
         row {
             label("Username")
             textField().align(AlignX.FILL).bindText(this@CodeTesterLoginDialogWrapper::username)
         }
         row {
             label("Password")
-            cell(passwordField).align(AlignX.FILL).bindText(this@CodeTesterLoginDialogWrapper::password)
+            passwordField().align(AlignX.FILL).bindText(this@CodeTesterLoginDialogWrapper::password)
         }
     }
 }
