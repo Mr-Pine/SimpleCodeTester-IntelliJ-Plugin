@@ -5,7 +5,10 @@ import com.intellij.openapi.ui.DialogPanel
 import com.intellij.ui.dsl.builder.Align
 import com.intellij.ui.dsl.builder.AlignY
 import com.intellij.ui.dsl.builder.panel
+import de.mr_pine.simplecodetesterplugin.actions.CategorySelectionComboBoxAction
+import de.mr_pine.simplecodetesterplugin.actions.CodeTesterGetCategoriesAction
 import de.mr_pine.simplecodetesterplugin.actions.CodeTesterLoginAction
+import de.mr_pine.simplecodetesterplugin.actions.CodeTesterLogoutAction
 
 fun loggedOutDialogPanel(): DialogPanel = panel {
     row {
@@ -31,7 +34,17 @@ fun loggedOutDialogPanel(): DialogPanel = panel {
     }.resizableRow()
 }
 
-fun loggedInDialogPanel(): DialogPanel = panel {
+fun submitDialogPanel(): DialogPanel = panel {
+    row {
+        val actionGroup = DefaultActionGroup().apply { addAll(CodeTesterGetCategoriesAction(), CategorySelectionComboBoxAction()) }
+        val actionToolbar = ActionManager.getInstance().createActionToolbar("ToolWindow", actionGroup, true)
+        actionToolbar.targetComponent = null
+        cell(actionToolbar.component)
+
+        actionButton(CodeTesterGetCategoriesAction())
+        actionsButton(CategorySelectionComboBoxAction())
+        actionButton(CodeTesterLogoutAction())
+    }
     row {
         panel {
             row {
