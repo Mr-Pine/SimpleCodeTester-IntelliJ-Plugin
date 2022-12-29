@@ -10,6 +10,11 @@ import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.roots.ModuleRootManager
 import com.intellij.openapi.vfs.VfsUtilCore
 import com.intellij.openapi.vfs.VirtualFile
+import de.mr_pine.simplecodetesterplugin.CodeTester
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class CodeTesterSubmitAllAction : AnAction() {
 
@@ -23,10 +28,15 @@ class CodeTesterSubmitAllAction : AnAction() {
                 sourceRoot,
                 { true },
                 { file ->
-                    if(!file.isDirectory) fileList.add(file)
+                    if(!file.isDirectory && (file.extension ?: "") == "java") fileList.add(file)
                     true
                 }
             )
+
+            CoroutineScope(Job() + Dispatchers.IO).launch {
+                CodeTester.submitFiles(files = fileList)
+            }
+
             LOG.info(fileList.toString())
         }
     }

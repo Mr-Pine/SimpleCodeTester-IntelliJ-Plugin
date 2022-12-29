@@ -4,6 +4,7 @@ import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.LogLevel
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.vfs.VirtualFile
 import de.mr_pine.simplecodetesterplugin.actions.CodeTesterGetCategoriesAction
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -12,6 +13,7 @@ import io.ktor.client.plugins.auth.providers.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.Serializable
@@ -123,10 +125,26 @@ object CodeTester {
     var categories: List<TestCategory> = listOf()
     var currentCategory: TestCategory? = null
 
+    suspend fun submitFiles(category: TestCategory = currentCategory ?: TestCategory(0, "ERROR"), files: List<VirtualFile>): HttpResponse {
+        val result = client.post("$url/test/multiple/${category.id}") {
+            setBody(
+                MultiPartFormDataContent(
+                    formData {
+                        files.forEach {
+                            append(it.name, it.inputStream.use { inputStream -> inputStream.readBytes() })
+                        }
+                    }
+                )
+            )
+        }
+
+        return result
+    }
+
     init {
         logger.info("refreshToken: ${CodeTesterCredentials[CodeTesterCredentials.CredentialType.REFRESH_TOKEN].toString()}")
 
-        if(CodeTesterCredentials[CodeTesterCredentials.CredentialType.REFRESH_TOKEN] != null) loginListeners.forEach {
+        if (CodeTesterCredentials[CodeTesterCredentials.CredentialType.REFRESH_TOKEN] != null) loginListeners.forEach {
             ApplicationManager.getApplication().invokeLater(it)
         }
     }
