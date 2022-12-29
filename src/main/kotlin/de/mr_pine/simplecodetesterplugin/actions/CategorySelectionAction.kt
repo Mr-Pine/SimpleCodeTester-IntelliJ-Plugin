@@ -1,5 +1,6 @@
 package de.mr_pine.simplecodetesterplugin.actions
 
+import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.ex.ComboBoxAction
 import com.intellij.openapi.project.DumbAware
@@ -15,8 +16,10 @@ import javax.swing.JComponent
 class CategorySelectionComboBoxAction: ComboBoxAction(), DumbAware {
     override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
+    private val icon = AllIcons.Actions.ListChanges
     override fun update(e: AnActionEvent) {
         e.presentation.isEnabledAndVisible = CodeTester.loggedIn
+        e.presentation.icon = icon
         CodeTester.currentCategory?.let { e.presentation.setText(it.name, false) }
     }
 

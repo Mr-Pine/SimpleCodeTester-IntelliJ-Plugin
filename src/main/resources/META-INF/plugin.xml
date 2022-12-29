@@ -24,28 +24,35 @@
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow factoryClass="de.mr_pine.simplecodetesterplugin.toolwindow.CodeTesterToolWindowFactory" id="SimpleCodeTester"/>
+        <toolWindow factoryClass="de.mr_pine.simplecodetesterplugin.toolwindow.CodeTesterToolWindowFactory"
+                    id="SimpleCodeTester" anchor="bottom"/>
     </extensions>
     <actions>
+        <group id="de.mr_pine.simplecodetesterplugin.actions.CodeTesterToolbarActions" text="CodeTester" popup="true"/>
         <group id="de.mr_pine.simplecodetesterplugin.actions.CodeTesterActions" text="CodeTester" popup="true">
             <add-to-group group-id="ToolsMenu"/>
-        <action id="de.mr_pine.simplecodetesterplugin.actions.CodeTesterLoginAction"
-                class="de.mr_pine.simplecodetesterplugin.actions.CodeTesterLoginAction" text="CodeTester Login"
-                description="Log in to the SimpleCodeTester">
-            <!--add-to-group group-id="de.mr_pine.simplecodetesterplugin.actions.CodeTesterActions"/-->
-        </action>
-        <action id="de.mr_pine.simplecodetesterplugin.actions.CodeTesterGetCategoriesAction"
-                class="de.mr_pine.simplecodetesterplugin.actions.CodeTesterGetCategoriesAction" text="Refresh Categories">
-            <!--add-to-group group-id="de.mr_pine.simplecodetesterplugin.actions.CodeTesterActions"/-->
-        </action>
-        <action id="de.mr_pine.simplecodetesterplugin.actions.CodeTesterLogoutAction"
-                class="de.mr_pine.simplecodetesterplugin.actions.CodeTesterLogoutAction"
-                text="Log out of the CodeTester">
-            <!--add-to-group group-id="de.mr_pine.simplecodetesterplugin.actions.CodeTesterActions"/-->
-        </action>
-        <action id="de.mr_pine.simplecodetesterplugin.actions.CategorySelectionComboBoxAction"
-                class="de.mr_pine.simplecodetesterplugin.actions.CategorySelectionComboBoxAction"
-                text="Select Test Category"/>
+            <action id="de.mr_pine.simplecodetesterplugin.actions.CodeTesterLoginAction"
+                    class="de.mr_pine.simplecodetesterplugin.actions.CodeTesterLoginAction" text="CodeTester Login"
+                    description="Log in to the SimpleCodeTester"/>
+            <action id="de.mr_pine.simplecodetesterplugin.actions.CategorySelectionComboBoxAction"
+                    class="de.mr_pine.simplecodetesterplugin.actions.CategorySelectionComboBoxAction"
+                    text="Select Test Category">
+                <add-to-group group-id="de.mr_pine.simplecodetesterplugin.actions.CodeTesterToolbarActions"/>
+            </action>
+            <action id="de.mr_pine.simplecodetesterplugin.actions.CodeTesterGetCategoriesAction"
+                    class="de.mr_pine.simplecodetesterplugin.actions.CodeTesterGetCategoriesAction"
+                    text="Refresh Categories">
+                <add-to-group group-id="de.mr_pine.simplecodetesterplugin.actions.CodeTesterToolbarActions"/>
+            </action>
+            <action id="de.mr_pine.simplecodetesterplugin.actions.CodeTesterSubmitAllAction"
+                    class="de.mr_pine.simplecodetesterplugin.actions.CodeTesterSubmitAllAction"
+                    text="Submit all Files">
+                <add-to-group group-id="de.mr_pine.simplecodetesterplugin.actions.CodeTesterToolbarActions"/>
+            </action>
+            <action id="de.mr_pine.simplecodetesterplugin.actions.CodeTesterLogoutAction"
+                    class="de.mr_pine.simplecodetesterplugin.actions.CodeTesterLogoutAction"
+                    text="Log out of the CodeTester">
+            </action>
         </group>
     </actions>
 </idea-plugin>
