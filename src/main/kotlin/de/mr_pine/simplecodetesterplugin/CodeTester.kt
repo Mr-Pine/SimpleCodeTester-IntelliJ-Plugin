@@ -131,7 +131,7 @@ object CodeTester {
                 MultiPartFormDataContent(
                     formData {
                         files.forEach {
-                            append(it.name, it.inputStream.use { inputStream -> inputStream.readBytes() })
+                            append(it.name, it.contentsToByteArray())
                         }
                     }
                 )
