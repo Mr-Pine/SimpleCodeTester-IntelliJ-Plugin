@@ -2,10 +2,6 @@ package de.mr_pine.simplecodetesterplugin.ui
 
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionManager
-import com.intellij.openapi.actionSystem.ActionToolbar
-import com.intellij.openapi.actionSystem.DefaultActionGroup
-import de.mr_pine.simplecodetesterplugin.actions.CategorySelectionComboBoxAction
-import de.mr_pine.simplecodetesterplugin.actions.CodeTesterGetCategoriesAction
 import org.jetbrains.annotations.NonNls
 import javax.swing.Box
 
@@ -18,6 +14,7 @@ class CodeTesterActionToolBar(orientation: ToolBarOrientation, place: @NonNls St
         get() = Box.createHorizontalBox().apply { add(toolbar.component) }
 }
 
+@Suppress("unused")
 enum class ToolBarOrientation(val value: Boolean) {
     HORIZONTAL(true), VERTICAL(false)
 }

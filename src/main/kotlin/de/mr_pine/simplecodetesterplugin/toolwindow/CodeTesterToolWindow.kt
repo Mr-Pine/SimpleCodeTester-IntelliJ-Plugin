@@ -5,11 +5,7 @@ import com.intellij.openapi.ui.DialogPanel
 import com.intellij.ui.dsl.builder.Align
 import com.intellij.ui.dsl.builder.AlignY
 import com.intellij.ui.dsl.builder.panel
-import de.mr_pine.simplecodetesterplugin.actions.CategorySelectionComboBoxAction
-import de.mr_pine.simplecodetesterplugin.actions.CodeTesterGetCategoriesAction
 import de.mr_pine.simplecodetesterplugin.actions.CodeTesterLoginAction
-import de.mr_pine.simplecodetesterplugin.actions.CodeTesterLogoutAction
-import de.mr_pine.simplecodetesterplugin.ui.CodeTesterSubmitPanel
 
 fun loggedOutDialogPanel(): DialogPanel = panel {
     row {

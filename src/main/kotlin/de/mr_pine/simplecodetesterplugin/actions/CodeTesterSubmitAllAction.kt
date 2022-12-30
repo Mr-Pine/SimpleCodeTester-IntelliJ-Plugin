@@ -1,8 +1,11 @@
 package de.mr_pine.simplecodetesterplugin.actions
 
 import com.intellij.icons.AllIcons
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationAction
+import com.intellij.notification.NotificationGroupManager
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.ActionUpdateThread
-import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.diagnostic.LogLevel
 import com.intellij.openapi.diagnostic.Logger
@@ -16,10 +19,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
-class CodeTesterSubmitAllAction : AnAction() {
+class CodeTesterSubmitAllAction(text: String): NotificationAction(text) {
 
+    @Suppress("unused")
+    constructor(): this("")
     override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
+    override fun actionPerformed(e: AnActionEvent, notification: Notification) = actionPerformed(e)
     override fun actionPerformed(event: AnActionEvent) {
         event.project?.let { project ->
             val sourceRoot = ModuleRootManager.getInstance(ModuleManager.getInstance(project).modules[0]).sourceRoots[0]
@@ -28,14 +34,25 @@ class CodeTesterSubmitAllAction : AnAction() {
                 sourceRoot,
                 { true },
                 { file ->
-                    if(!file.isDirectory && (file.extension ?: "") == "java") fileList.add(file)
+                    if (!file.isDirectory && (file.extension ?: "") == "java") fileList.add(file)
                     true
                 }
             )
 
             CoroutineScope(Job() + Dispatchers.IO).launch {
-                val result = CodeTester.submitFiles(files = fileList)
-                println(result)
+                val category = CodeTester.currentCategory
+                if (category != null) {
+                    val result = CodeTester.submitFiles(category = category, files = fileList)
+                    println(result)
+                } else {
+                    NotificationGroupManager.getInstance()
+                        .getNotificationGroup("codetester.notifications")
+                        .createNotification("You have to select a category", NotificationType.ERROR)
+                        .setTitle("No category selected")
+                        .addAction(CodeTesterCategorySelectionNotificationAction("Select Category"))
+                        .addAction(CodeTesterSubmitAllAction("Retry"))
+                        .notify(project)
+                }
             }
 
             LOG.info(fileList.toString())

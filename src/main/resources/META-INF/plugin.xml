@@ -26,6 +26,8 @@
     <extensions defaultExtensionNs="com.intellij">
         <toolWindow factoryClass="de.mr_pine.simplecodetesterplugin.toolwindow.CodeTesterToolWindowFactory"
                     id="SimpleCodeTester" anchor="bottom"/>
+        <notificationGroup id="codetester.notifications"
+                           displayType="BALLOON"/>
     </extensions>
     <actions>
         <group id="de.mr_pine.simplecodetesterplugin.actions.CodeTesterToolbarActions" text="CodeTester" popup="true"/>
@@ -34,8 +36,8 @@
             <action id="de.mr_pine.simplecodetesterplugin.actions.CodeTesterLoginAction"
                     class="de.mr_pine.simplecodetesterplugin.actions.CodeTesterLoginAction" text="CodeTester Login"
                     description="Log in to the SimpleCodeTester"/>
-            <action id="de.mr_pine.simplecodetesterplugin.actions.CategorySelectionComboBoxAction"
-                    class="de.mr_pine.simplecodetesterplugin.actions.CategorySelectionComboBoxAction"
+            <action id="de.mr_pine.simplecodetesterplugin.actions.CodeTesterCategorySelectionComboBoxAction"
+                    class="de.mr_pine.simplecodetesterplugin.actions.CodeTesterCategorySelectionComboBoxAction"
                     text="Select Test Category">
                 <add-to-group group-id="de.mr_pine.simplecodetesterplugin.actions.CodeTesterToolbarActions"/>
             </action>
@@ -46,7 +48,7 @@
             </action>
             <action id="de.mr_pine.simplecodetesterplugin.actions.CodeTesterSubmitAllAction"
                     class="de.mr_pine.simplecodetesterplugin.actions.CodeTesterSubmitAllAction"
-                    text="Submit all Files">
+                    text="Submit All Files">
                 <add-to-group group-id="de.mr_pine.simplecodetesterplugin.actions.CodeTesterToolbarActions"/>
             </action>
             <action id="de.mr_pine.simplecodetesterplugin.actions.CodeTesterLogoutAction"
@@ -54,5 +56,8 @@
                     text="Log out of the CodeTester">
             </action>
         </group>
+        <action id="de.mr_pine.simplecodetesterplugin.actions.CodeTesterCategorySelectionNotificationAction"
+                class="de.mr_pine.simplecodetesterplugin.actions.CodeTesterCategorySelectionNotificationAction"
+                text="Category Selection Notification"/>
     </actions>
 </idea-plugin>

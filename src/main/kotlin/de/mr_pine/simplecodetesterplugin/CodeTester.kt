@@ -132,7 +132,7 @@ object CodeTester {
     var currentCategory: TestCategory? = null
 
     suspend fun submitFiles(
-        category: TestCategory = currentCategory ?: TestCategory(0, "ERROR"),
+        category: TestCategory,
         files: List<VirtualFile>
     ): CodeTesterResult {
         val response = client.submitFormWithBinaryData(
