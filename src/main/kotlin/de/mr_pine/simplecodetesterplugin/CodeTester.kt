@@ -8,23 +8,29 @@ import com.intellij.openapi.vfs.VirtualFile
 import de.mr_pine.simplecodetesterplugin.actions.CodeTesterGetCategoriesAction
 import io.ktor.client.*
 import io.ktor.client.call.*
+import io.ktor.client.engine.java.*
 import io.ktor.client.plugins.auth.*
 import io.ktor.client.plugins.auth.providers.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
-import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 
 object CodeTester {
     private val logger = Logger.getInstance(CodeTester.javaClass).apply { setLevel(LogLevel.DEBUG) }
 
     private const val url = "https://codetester.ialistannen.de"
-    private val client = HttpClient {
+    private val client = HttpClient(Java) {
+        engine {
+            protocolVersion = java.net.http.HttpClient.Version.HTTP_2
+        }
         install(ContentNegotiation) {
-            json()
+            json(Json {
+                ignoreUnknownKeys = true
+            })
         }
         install(Auth) {
             bearer {
@@ -125,20 +131,23 @@ object CodeTester {
     var categories: List<TestCategory> = listOf()
     var currentCategory: TestCategory? = null
 
-    suspend fun submitFiles(category: TestCategory = currentCategory ?: TestCategory(0, "ERROR"), files: List<VirtualFile>): HttpResponse {
-        val result = client.post("$url/test/multiple/${category.id}") {
-            setBody(
-                MultiPartFormDataContent(
-                    formData {
-                        files.forEach {
-                            append(it.name, it.contentsToByteArray())
-                        }
-                    }
-                )
-            )
-        }
+    suspend fun submitFiles(
+        category: TestCategory = currentCategory ?: TestCategory(0, "ERROR"),
+        files: List<VirtualFile>
+    ): CodeTesterResult {
+        val response = client.submitFormWithBinaryData(
+            url = "$url/test/multiple/${category.id}",
+            formData {
+                files.forEach { file ->
+                    append(file.name, file.contentsToByteArray(), Headers.build {
+                        append(HttpHeaders.ContentType, ContentType.Application.OctetStream)
+                        append(HttpHeaders.ContentDisposition, "filename=\"${file.name}\"")
+                    })
+                }
+            }
+        )
 
-        return result
+        return response.body()
     }
 
     init {

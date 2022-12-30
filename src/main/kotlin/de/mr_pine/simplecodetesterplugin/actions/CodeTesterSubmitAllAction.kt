@@ -34,7 +34,8 @@ class CodeTesterSubmitAllAction : AnAction() {
             )
 
             CoroutineScope(Job() + Dispatchers.IO).launch {
-                CodeTester.submitFiles(files = fileList)
+                val result = CodeTester.submitFiles(files = fileList)
+                println(result)
             }
 
             LOG.info(fileList.toString())
