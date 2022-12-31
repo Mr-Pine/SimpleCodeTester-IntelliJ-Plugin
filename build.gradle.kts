@@ -13,7 +13,9 @@ repositories {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
 }
 
 // Configure Gradle IntelliJ Plugin
@@ -42,6 +44,10 @@ tasks {
         version.set("${project.version}")
         sinceBuild.set("223")
         untilBuild.set("231.*")
+    }
+
+    withType(JavaCompile::class.java) {
+        options.encoding = "UTF-8"
     }
 
     compileKotlin {
