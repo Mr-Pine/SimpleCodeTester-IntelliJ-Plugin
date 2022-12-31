@@ -10,6 +10,8 @@ class CodeTesterActionToolBar(orientation: ToolBarOrientation, place: @NonNls St
 
     private val toolbar = ActionManager.getInstance().createActionToolbar(place, actionGroup, orientation.value)
 
+    val setTargetComponent = toolbar::setTargetComponent
+
     val component
         get() = Box.createHorizontalBox().apply { add(toolbar.component) }
 }

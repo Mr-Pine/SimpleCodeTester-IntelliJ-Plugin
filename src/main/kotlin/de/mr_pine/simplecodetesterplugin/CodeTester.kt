@@ -6,6 +6,7 @@ import com.intellij.openapi.diagnostic.LogLevel
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.vfs.VirtualFile
 import de.mr_pine.simplecodetesterplugin.actions.CodeTesterGetCategoriesAction
+import de.mr_pine.simplecodetesterplugin.models.result.CodeTesterResult
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.java.*
@@ -18,6 +19,7 @@ import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import kotlin.time.Duration.Companion.milliseconds
 
 object CodeTester {
     private val logger = Logger.getInstance(CodeTester.javaClass).apply { setLevel(LogLevel.DEBUG) }
@@ -132,7 +134,7 @@ object CodeTester {
     var currentCategory: TestCategory? = null
 
     suspend fun submitFiles(
-        category: TestCategory,
+        category: TestCategory = currentCategory ?: TestCategory(0, "ERROR"),
         files: List<VirtualFile>
     ): CodeTesterResult {
         val response = client.submitFormWithBinaryData(
@@ -147,8 +149,16 @@ object CodeTester {
             }
         )
 
-        return response.body()
+        val result = response.body<CodeTesterResult>()
+            .apply { duration = (response.responseTime.timestamp - response.requestTime.timestamp).milliseconds }
+
+        resultListeners.forEach { ApplicationManager.getApplication().invokeLater { it(result) } }
+
+        return result
     }
+
+    private val resultListeners: MutableList<(CodeTesterResult) -> Unit> = mutableListOf()
+    val registerResultListener: ((CodeTesterResult) -> Unit) -> Boolean = resultListeners::add
 
     init {
         logger.info("refreshToken: ${CodeTesterCredentials[CodeTesterCredentials.CredentialType.REFRESH_TOKEN].toString()}")

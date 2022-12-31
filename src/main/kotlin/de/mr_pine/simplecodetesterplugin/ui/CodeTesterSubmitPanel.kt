@@ -6,19 +6,14 @@ import java.awt.BorderLayout
 import javax.swing.JPanel
 
 class CodeTesterSubmitPanel(val project: Project) : JPanel(BorderLayout()) {
-    private var toolWindowPanel: CodeTesterToolWindowPanel? = null
-
     init {
-        createToolPanel()
-        add(toolWindowPanel!!.getPanel())
-        isVisible = true
-    }
-
-    private fun createToolPanel() {
-        toolWindowPanel = CodeTesterToolWindowPanel(
+        val label = JBLabel("Nothing to see here (yet)")
+        val toolWindowPanel = CodeTesterToolWindowPanel(
             this::class.java,
-            topComponent = CodeTesterActionToolBar(ToolBarOrientation.HORIZONTAL).component,
-            mainComponent = JBLabel("Nothing to see here (yet)")
+            topComponent = CodeTesterActionToolBar(ToolBarOrientation.HORIZONTAL).apply { setTargetComponent(label) }.component,
+            mainComponent = label
         )
+        add(toolWindowPanel.getPanel())
+        isVisible = true
     }
 }
