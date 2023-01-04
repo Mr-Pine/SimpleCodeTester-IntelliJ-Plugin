@@ -7,7 +7,7 @@ class CheckResultNode(
     project: Project,
     parentNode: FileResultNode,
     checkName: String,
-    override val duration: Duration,
+    override var duration: Duration,
     override val success: Boolean
 ) : ResultTreeNode(project, parentNode) {
     override val hint = checkName

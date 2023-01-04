@@ -10,7 +10,7 @@ import javax.swing.Icon
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
-open class ResultTreeNode(project: Project, val parentNode: ResultTreeNode?, open val duration: Duration = (-1).seconds): PresentableNodeDescriptor<ResultTreeNode>(project, parentNode) {
+open class ResultTreeNode(project: Project, val parentNode: ResultTreeNode?, open var duration: Duration = (-1).seconds): PresentableNodeDescriptor<ResultTreeNode>(project, parentNode) {
     val children = mutableListOf<ResultTreeNode>()
 
     open val hint = "Unknown"
@@ -33,7 +33,9 @@ open class ResultTreeNode(project: Project, val parentNode: ResultTreeNode?, ope
 
     override fun getElement() = this
 
-    fun add(child: ResultTreeNode) = children.add(child)
+    fun add(child: ResultTreeNode) {
+        children.add(child)
+    }
 
     open fun getCurrentIcon() = if(success) NODE_ICON_OK else NODE_ICON_ERROR
 

@@ -17,6 +17,12 @@ import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlin.time.Duration.Companion.milliseconds
@@ -134,31 +140,45 @@ object CodeTester {
     var currentCategory: TestCategory? = null
 
     suspend fun submitFiles(
-        category: TestCategory = currentCategory ?: TestCategory(0, "ERROR"),
+        category: TestCategory,
         files: List<VirtualFile>
-    ): CodeTesterResult {
-        val response = client.submitFormWithBinaryData(
-            url = "$url/test/multiple/${category.id}",
-            formData {
-                files.forEach { file ->
-                    append(file.name, file.contentsToByteArray(), Headers.build {
-                        append(HttpHeaders.ContentType, ContentType.Application.OctetStream)
-                        append(HttpHeaders.ContentDisposition, "filename=\"${file.name}\"")
-                    })
-                }
+    ): SharedFlow<CodeTesterResult> =
+        coroutineScope {
+            val resultFlow: MutableSharedFlow<CodeTesterResult> = MutableSharedFlow()
+            async {
+                val response = client.submitFormWithBinaryData(
+                    url = "$url/test/multiple/${category.id}",
+                    formData {
+                        files.forEach { file ->
+                            append(file.name, file.contentsToByteArray(), Headers.build {
+                                append(HttpHeaders.ContentType, ContentType.Application.OctetStream)
+                                append(HttpHeaders.ContentDisposition, "filename=\"${file.name}\"")
+                            })
+                        }
+                    }
+                )
+
+                println(response.body<String>())
+
+                val result = response.body<CodeTesterResult>()
+                    .apply {
+                        duration = (response.responseTime.timestamp - response.requestTime.timestamp).milliseconds
+                    }
+
+                resultFlow.emit(result)
+
             }
-        )
+            resultFlowListeners.forEach { ApplicationManager.getApplication().invokeLater { it(resultFlow) } }
+            return@coroutineScope resultFlow
+        }
 
-        val result = response.body<CodeTesterResult>()
-            .apply { duration = (response.responseTime.timestamp - response.requestTime.timestamp).milliseconds }
+    suspend fun submitFilesWait(
+        category: TestCategory,
+        files: List<VirtualFile>
+    ): CodeTesterResult = coroutineScope { submitFiles(category, files).first() }
 
-        resultListeners.forEach { ApplicationManager.getApplication().invokeLater { it(result) } }
-
-        return result
-    }
-
-    private val resultListeners: MutableList<(CodeTesterResult) -> Unit> = mutableListOf()
-    val registerResultListener: ((CodeTesterResult) -> Unit) -> Boolean = resultListeners::add
+    private val resultFlowListeners: MutableList<(SharedFlow<CodeTesterResult>) -> Unit> = mutableListOf()
+    val registerResultFlowListener: ((SharedFlow<CodeTesterResult>) -> Unit) -> Boolean = resultFlowListeners::add
 
     init {
         logger.info("refreshToken: ${CodeTesterCredentials[CodeTesterCredentials.CredentialType.REFRESH_TOKEN].toString()}")

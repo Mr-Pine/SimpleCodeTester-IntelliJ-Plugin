@@ -17,6 +17,7 @@ import de.mr_pine.simplecodetesterplugin.CodeTester
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class CodeTesterSubmitAllAction(text: String): NotificationAction(text) {
@@ -27,6 +28,7 @@ class CodeTesterSubmitAllAction(text: String): NotificationAction(text) {
 
     override fun actionPerformed(e: AnActionEvent, notification: Notification) = actionPerformed(e)
     override fun actionPerformed(event: AnActionEvent) {
+        println("Submitting")
         event.project?.let { project ->
             val sourceRoot = ModuleRootManager.getInstance(ModuleManager.getInstance(project).modules[0]).sourceRoots[0]
             val fileList = mutableListOf<VirtualFile>()
@@ -43,7 +45,7 @@ class CodeTesterSubmitAllAction(text: String): NotificationAction(text) {
                 val category = CodeTester.currentCategory
                 if (category != null) {
                     val result = CodeTester.submitFiles(category = category, files = fileList)
-                    println(result)
+                    println(result.first())
                 } else {
                     NotificationGroupManager.getInstance()
                         .getNotificationGroup("codetester.notifications")

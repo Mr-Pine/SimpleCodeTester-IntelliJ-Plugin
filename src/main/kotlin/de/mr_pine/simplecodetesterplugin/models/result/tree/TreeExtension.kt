@@ -6,20 +6,37 @@ import de.mr_pine.simplecodetesterplugin.models.result.CodeTesterResult
 import de.mr_pine.simplecodetesterplugin.models.result.tree.node.FileResultNode
 import de.mr_pine.simplecodetesterplugin.models.result.tree.node.ResultTreeNode
 import de.mr_pine.simplecodetesterplugin.models.result.tree.node.CheckResultNode
+import de.mr_pine.simplecodetesterplugin.models.result.tree.node.RootResultNode
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
 
-fun CodeTesterResult.tree(project: Project): ResultTreeNode {
+fun Flow<CodeTesterResult>.tree(project: Project): ResultTreeNode {
     val rootNode = ResultTreeNode(project, null)
-    val resultTreeNode = ResultTreeNode(project, rootNode, duration)
+    val resultTreeNode = RootResultNode(project, rootNode)
     rootNode.add(resultTreeNode)
 
-    this.fileResults?.forEach {
-        val fileResultNode = FileResultNode(project, resultTreeNode, it.key)
-        it.value.forEach { checkResult ->
-            val checkResultNode = CheckResultNode(project, fileResultNode, checkResult.check, checkResult.durationMillis.milliseconds, checkResult.result == CheckResult.Result.SUCCESSFUL)
-            fileResultNode.add(checkResultNode)
+    CoroutineScope(Job() + Dispatchers.IO).launch {
+        val result = first()
+
+        resultTreeNode.duration = result.duration
+
+        result.fileResults?.forEach {
+            val fileResultNode = FileResultNode(project, resultTreeNode, it.key)
+            it.value.forEach { checkResult ->
+                val checkResultNode = CheckResultNode(project, fileResultNode, checkResult.check, checkResult.durationMillis.milliseconds, checkResult.result == CheckResult.Result.SUCCESSFUL)
+                fileResultNode.add(checkResultNode)
+            }
+            resultTreeNode.add(fileResultNode)
         }
-        resultTreeNode.add(fileResultNode)
+
+        resultTreeNode.finish()
+        println("done")
     }
 
     return rootNode

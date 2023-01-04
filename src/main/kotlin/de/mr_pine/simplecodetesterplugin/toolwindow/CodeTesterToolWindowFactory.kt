@@ -8,6 +8,7 @@ import de.mr_pine.simplecodetesterplugin.CodeTester
 import de.mr_pine.simplecodetesterplugin.models.result.CodeTesterResult
 import de.mr_pine.simplecodetesterplugin.ui.CodeTesterResultPanel
 import de.mr_pine.simplecodetesterplugin.ui.CodeTesterSubmitPanel
+import kotlinx.coroutines.flow.Flow
 
 class CodeTesterToolWindowFactory : ToolWindowFactory, DumbAware {
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
@@ -24,14 +25,14 @@ class CodeTesterToolWindowFactory : ToolWindowFactory, DumbAware {
             contentManager.removeContent(submitContent, true)
             contentManager.addContent(loggedOutContent)
         }
-        fun showResultContent(result: CodeTesterResult) {
-            val resultContent = contentManager.factory.createContent(CodeTesterResultPanel(project, result).component, "Result", false)
+        fun showResultContent(resultFlow: Flow<CodeTesterResult>) {
+            val resultContent = contentManager.factory.createContent(CodeTesterResultPanel(project, resultFlow).component, "Result", false)
             contentManager.addContent(resultContent)
         }
 
         CodeTester.registerLoginListener(::showSubmitContent)
         CodeTester.registerLogoutListener(::showLoggedOutContent)
-        CodeTester.registerResultListener(::showResultContent)
+        CodeTester.registerResultFlowListener(::showResultContent)
 
         if (CodeTester.loggedIn) {
             showSubmitContent()
