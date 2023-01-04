@@ -64,6 +64,13 @@ class CodeTesterResultPanel(val project: Project, resultFlow: Flow<CodeTesterRes
 
         (rootNode.children[0] as RootResultNode).registerFinishListener {
             treeModel.invalidateAsync()
+            rootNode.children.forEach {
+                it.children.forEach {
+                    treeModel.expand(it, tree) {
+                        println("Expanded: $it")
+                    }
+                }
+            }
         }
 
         panel.add(codeTesterPanel.getPanel())
