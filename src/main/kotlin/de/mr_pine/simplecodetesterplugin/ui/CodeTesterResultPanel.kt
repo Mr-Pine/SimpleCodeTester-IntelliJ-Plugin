@@ -4,7 +4,6 @@ import com.intellij.execution.filters.TextConsoleBuilderFactory
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ComponentContainer
-import com.intellij.openapi.ui.getTreePath
 import com.intellij.ui.AnimatedIcon
 import com.intellij.ui.OnePixelSplitter
 import com.intellij.ui.ScrollPaneFactory
@@ -21,7 +20,6 @@ import com.intellij.util.ui.tree.TreeUtil
 import de.mr_pine.simplecodetesterplugin.models.result.CodeTesterResult
 import de.mr_pine.simplecodetesterplugin.models.result.tree.CodeTesterResultTreeStructure
 import de.mr_pine.simplecodetesterplugin.models.result.tree.node.CodeTesterNodeRenderer
-import de.mr_pine.simplecodetesterplugin.models.result.tree.node.ResultTreeNode
 import de.mr_pine.simplecodetesterplugin.models.result.tree.node.RootResultNode
 import de.mr_pine.simplecodetesterplugin.models.result.tree.tree
 import kotlinx.coroutines.flow.Flow
@@ -30,11 +28,6 @@ import java.awt.CardLayout
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.swing.JComponent
 import javax.swing.JPanel
-import javax.swing.event.TreeModelEvent
-import javax.swing.event.TreeModelListener
-import javax.swing.tree.TreeModel
-import javax.swing.tree.TreeNode
-import javax.swing.tree.TreePath
 
 class CodeTesterResultPanel(val project: Project, resultFlow: Flow<CodeTesterResult>) : ComponentContainer {
 
@@ -48,8 +41,10 @@ class CodeTesterResultPanel(val project: Project, resultFlow: Flow<CodeTesterRes
 
         val rootNode = resultFlow.tree(project)
 
-        val asyncModel = createTreeModel(rootNode)
-        tree = initTree(asyncModel)
+        val treeStructure = CodeTesterResultTreeStructure(rootNode)
+        val treeModel = StructureTreeModel(treeStructure, null, Invoker.forBackgroundThreadWithReadAction(this), this)
+        val asyncTreeModel = AsyncTreeModel(treeModel, this)
+        tree = initTree(asyncTreeModel)
 
         val scrollPane = ScrollPaneFactory.createScrollPane(tree, SideBorder.NONE)
 
@@ -68,20 +63,14 @@ class CodeTesterResultPanel(val project: Project, resultFlow: Flow<CodeTesterRes
         )
 
         (rootNode.children[0] as RootResultNode).registerFinishListener {
-            tree.model = createTreeModel(rootNode)
-            /*(tree.model as AsyncTreeModel).onValidThread {
-                val path = TreePath(rootNode).pathByAddingChild(rootNode.children[0]).pathByAddingChild(rootNode.children[0])
-                tree.expandPath(path)
-                //tree.expandRow(tree.rowCount)
-            }*/
-
+            treeModel.invalidateAsync()
         }
 
         panel.add(codeTesterPanel.getPanel())
         panel.isVisible = true
     }
 
-    private fun initTree(model: TreeModel): Tree {
+    private fun initTree(model: AsyncTreeModel): Tree {
         val initTree = Tree(model).apply {
             isLargeModel = true
             putClientProperty(AnimatedIcon.ANIMATION_IN_RENDERER_ALLOWED, true)
@@ -96,31 +85,6 @@ class CodeTesterResultPanel(val project: Project, resultFlow: Flow<CodeTesterRes
         return initTree
     }
 
-    private fun createTreeModel(rootNode: ResultTreeNode): TreeModel {
-        val treeStructure = CodeTesterResultTreeStructure(rootNode)
-        val treeModel = StructureTreeModel(treeStructure, null, Invoker.forBackgroundThreadWithReadAction(this), this)
-        val asyncModel = AsyncTreeModel(treeModel, this)
-        /*asyncModel.addTreeModelListener(object : TreeModelListener {
-            override fun treeNodesChanged(e: TreeModelEvent?) {
-                e?.let { tree.expandPath(it.treePath) }
-            }
-
-            override fun treeNodesInserted(e: TreeModelEvent?) {
-                e?.let { tree.expandPath(it.treePath) }
-            }
-
-            override fun treeNodesRemoved(e: TreeModelEvent?) {
-                e?.let { tree.expandPath(it.treePath) }
-            }
-
-            override fun treeStructureChanged(e: TreeModelEvent?) {
-                e?.let { tree.expandPath(it.treePath) }
-            }
-
-        })*/
-        return asyncModel
-    }
-
     private var disposed = AtomicBoolean(false)
     override fun dispose() {
         disposed.set(true)
@@ -128,7 +92,7 @@ class CodeTesterResultPanel(val project: Project, resultFlow: Flow<CodeTesterRes
 
     override fun getComponent(): JComponent = panel
 
-    override fun getPreferredFocusableComponent(): JComponent = tree!!
+    override fun getPreferredFocusableComponent(): JComponent = tree
 
 
 }
