@@ -6,7 +6,7 @@ import kotlin.time.Duration
 class FileResultNode(project: Project, parentNode: ResultTreeNode, fileName: String) :
     ResultTreeNode(project, parentNode) {
     override val hint = fileName
-    override val nodeName = fileName
+    override val title = fileName.split(".").last()
     override var duration: Duration
         get() = children.fold(Duration.ZERO) { total, child -> total + child.duration }
         set(_) {}

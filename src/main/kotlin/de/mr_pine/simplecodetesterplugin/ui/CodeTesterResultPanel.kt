@@ -17,6 +17,7 @@ import com.intellij.util.EditSourceOnDoubleClickHandler
 import com.intellij.util.EditSourceOnEnterKeyHandler
 import com.intellij.util.concurrency.Invoker
 import com.intellij.util.ui.tree.TreeUtil
+import de.mr_pine.simplecodetesterplugin.TestCategory
 import de.mr_pine.simplecodetesterplugin.models.result.CodeTesterResult
 import de.mr_pine.simplecodetesterplugin.models.result.tree.CodeTesterResultTreeStructure
 import de.mr_pine.simplecodetesterplugin.models.result.tree.node.CodeTesterNodeRenderer
@@ -29,7 +30,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 import javax.swing.JComponent
 import javax.swing.JPanel
 
-class CodeTesterResultPanel(val project: Project, resultFlow: Flow<CodeTesterResult>) : ComponentContainer {
+class CodeTesterResultPanel(val project: Project, resultFlow: Flow<CodeTesterResult>, testCategory: TestCategory) : ComponentContainer {
 
     private val panel = JPanel(BorderLayout())
     private var tree: Tree
@@ -39,7 +40,7 @@ class CodeTesterResultPanel(val project: Project, resultFlow: Flow<CodeTesterRes
         console.print("test\n", ConsoleViewContentType.SYSTEM_OUTPUT)
         console.print("test input\n", ConsoleViewContentType.USER_INPUT)
 
-        val rootNode = resultFlow.tree(project)
+        val rootNode = resultFlow.tree(project, testCategory)
 
         val treeStructure = CodeTesterResultTreeStructure(rootNode)
         val treeModel = StructureTreeModel(treeStructure, null, Invoker.forBackgroundThreadWithReadAction(this), this)
@@ -99,7 +100,7 @@ class CodeTesterResultPanel(val project: Project, resultFlow: Flow<CodeTesterRes
 
     override fun getComponent(): JComponent = panel
 
-    override fun getPreferredFocusableComponent(): JComponent = tree
-
+    override fun getPreferredFocusableComponent(): JComponent =
+        tree
 
 }

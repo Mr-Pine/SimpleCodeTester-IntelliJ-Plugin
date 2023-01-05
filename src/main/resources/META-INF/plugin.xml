@@ -25,7 +25,7 @@
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
         <toolWindow factoryClass="de.mr_pine.simplecodetesterplugin.toolwindow.CodeTesterToolWindowFactory"
-                    id="SimpleCodeTester" anchor="bottom"/>
+                    id="SimpleCodeTester" anchor="bottom" canCloseContents="true"/>
         <notificationGroup id="codetester.notifications"
                            displayType="BALLOON"/>
     </extensions>

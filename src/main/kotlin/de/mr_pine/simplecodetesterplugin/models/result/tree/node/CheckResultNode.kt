@@ -10,6 +10,5 @@ class CheckResultNode(
     override var duration: Duration,
     override val success: Boolean
 ) : ResultTreeNode(project, parentNode) {
-    override val hint = checkName
-    override val nodeName = checkName
+    override val title = checkName
 }

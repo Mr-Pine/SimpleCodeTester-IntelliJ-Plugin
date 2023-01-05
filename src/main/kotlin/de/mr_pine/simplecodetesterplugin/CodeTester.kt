@@ -19,10 +19,8 @@ import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlin.time.Duration.Companion.milliseconds
@@ -168,17 +166,12 @@ object CodeTester {
                 resultFlow.emit(result)
 
             }
-            resultFlowListeners.forEach { ApplicationManager.getApplication().invokeLater { it(resultFlow) } }
+            resultFlowListeners.forEach { ApplicationManager.getApplication().invokeLater { it(resultFlow, category) } }
             return@coroutineScope resultFlow
         }
 
-    suspend fun submitFilesWait(
-        category: TestCategory,
-        files: List<VirtualFile>
-    ): CodeTesterResult = coroutineScope { submitFiles(category, files).first() }
-
-    private val resultFlowListeners: MutableList<(SharedFlow<CodeTesterResult>) -> Unit> = mutableListOf()
-    val registerResultFlowListener: ((SharedFlow<CodeTesterResult>) -> Unit) -> Boolean = resultFlowListeners::add
+    private val resultFlowListeners: MutableList<(SharedFlow<CodeTesterResult>, TestCategory) -> Unit> = mutableListOf()
+    val registerResultFlowListener: ((SharedFlow<CodeTesterResult>, TestCategory) -> Unit) -> Boolean = resultFlowListeners::add
 
     init {
         logger.info("refreshToken: ${CodeTesterCredentials[CodeTesterCredentials.CredentialType.REFRESH_TOKEN].toString()}")

@@ -13,10 +13,10 @@ import kotlin.time.Duration.Companion.seconds
 open class ResultTreeNode(project: Project, val parentNode: ResultTreeNode?, open var duration: Duration = (-1).seconds): PresentableNodeDescriptor<ResultTreeNode>(project, parentNode) {
     val children = mutableListOf<ResultTreeNode>()
 
-    open val hint = "Unknown"
-    open val nodeName = "Unknown name"
+    open val hint: String? = null
+    open val nodeName: String? = null
     open val success = false
-    open val title = "Title"
+    open val title: String? = null
     //private val hintData: HintDa
 
     override fun update(presentation: PresentationData) {
@@ -24,10 +24,10 @@ open class ResultTreeNode(project: Project, val parentNode: ResultTreeNode?, ope
             icon = getCurrentIcon()
             presentableText = nodeName
             this.setIcon(icon)
-            title.takeIf { it.isNotBlank() }?.let { addText("$it: ", SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES) }
 
-            nodeName.takeIf { it.isNotBlank() }?.let { addText(it, SimpleTextAttributes.REGULAR_ATTRIBUTES) }
-            hint.takeIf { it.isNotBlank() }?.let { addText((if(nodeName.isBlank()) "" else " ") + hint, SimpleTextAttributes.GRAYED_ATTRIBUTES ) }
+            nodeName?.takeIf { it.isNotBlank() }?.let { addText((if(hint?.isBlank() == true) "" else ": ") + it, SimpleTextAttributes.REGULAR_ATTRIBUTES) }
+            title?.takeIf { it.isNotBlank() }?.let { addText(it, SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES) }
+            hint?.takeIf { it.isNotBlank() }?.let { addText((if(nodeName?.isBlank() == true) "" else " ") + hint, SimpleTextAttributes.GRAYED_ATTRIBUTES ) }
         }
     }
 

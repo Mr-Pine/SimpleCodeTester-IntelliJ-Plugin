@@ -5,6 +5,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import de.mr_pine.simplecodetesterplugin.CodeTester
+import de.mr_pine.simplecodetesterplugin.TestCategory
 import de.mr_pine.simplecodetesterplugin.models.result.CodeTesterResult
 import de.mr_pine.simplecodetesterplugin.ui.CodeTesterResultPanel
 import de.mr_pine.simplecodetesterplugin.ui.CodeTesterSubmitPanel
@@ -14,8 +15,12 @@ class CodeTesterToolWindowFactory : ToolWindowFactory, DumbAware {
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
 
         val contentManager = toolWindow.contentManager
-        val loggedOutContent = contentManager.factory.createContent(loggedOutDialogPanel(), null, false)
-        val submitContent = contentManager.factory.createContent(CodeTesterSubmitPanel(project), "Submit", false)
+        val loggedOutContent = contentManager.factory.createContent(loggedOutDialogPanel(), null, false).apply {
+            isCloseable = false
+        }
+        val submitContent = contentManager.factory.createContent(CodeTesterSubmitPanel(project), "Submit", false).apply {
+            isCloseable = false
+        }
 
         fun showSubmitContent() {
             contentManager.removeContent(loggedOutContent, true)
@@ -25,9 +30,13 @@ class CodeTesterToolWindowFactory : ToolWindowFactory, DumbAware {
             contentManager.removeContent(submitContent, true)
             contentManager.addContent(loggedOutContent)
         }
-        fun showResultContent(resultFlow: Flow<CodeTesterResult>) {
-            val resultContent = contentManager.factory.createContent(CodeTesterResultPanel(project, resultFlow).component, "Result", false)
+        fun showResultContent(resultFlow: Flow<CodeTesterResult>, testCategory: TestCategory) {
+            val resultPanel = CodeTesterResultPanel(project, resultFlow, testCategory)
+            val resultContent = contentManager.factory.createContent(resultPanel.component, "Result", false).apply {
+                preferredFocusableComponent = resultPanel.preferredFocusableComponent
+            }
             contentManager.addContent(resultContent)
+            contentManager.setSelectedContent(resultContent)
         }
 
         CodeTester.registerLoginListener(::showSubmitContent)

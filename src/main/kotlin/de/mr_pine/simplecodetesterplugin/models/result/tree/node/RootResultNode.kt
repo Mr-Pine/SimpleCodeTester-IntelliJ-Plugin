@@ -2,7 +2,7 @@ package de.mr_pine.simplecodetesterplugin.models.result.tree.node
 
 import com.intellij.openapi.project.Project
 
-class RootResultNode(project: Project, parentNode: ResultTreeNode?) : ResultTreeNode(project, parentNode) {
+class RootResultNode(project: Project, parentNode: ResultTreeNode?, override val title: String) : ResultTreeNode(project, parentNode) {
     private var finished = false
     override val success: Boolean
         get() = children.all { it.success }
