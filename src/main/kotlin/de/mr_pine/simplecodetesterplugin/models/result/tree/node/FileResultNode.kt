@@ -7,8 +7,8 @@ class FileResultNode(project: Project, parentNode: ResultTreeNode, fileName: Str
     ResultTreeNode(project, parentNode) {
     override val hint = fileName
     override val title = fileName.split(".").last()
-    override var duration: Duration
-        get() = children.fold(Duration.ZERO) { total, child -> total + child.duration }
+    override var duration: Duration?
+        get() = children.fold(Duration.ZERO) { total, child -> total + (child.duration ?: Duration.ZERO) }
         set(_) {}
     override val success: Boolean
         get() = children.all { it.success }

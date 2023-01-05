@@ -1,9 +1,11 @@
 package de.mr_pine.simplecodetesterplugin.models.result.tree.node
 
 import com.intellij.openapi.project.Project
+import de.mr_pine.simplecodetesterplugin.models.result.CompilationOutput
 
 class RootResultNode(project: Project, parentNode: ResultTreeNode?, override val title: String) : ResultTreeNode(project, parentNode) {
     private var finished = false
+    var compilationOutput: CompilationOutput? = null
     override val success: Boolean
         get() = children.all { it.success }
 
