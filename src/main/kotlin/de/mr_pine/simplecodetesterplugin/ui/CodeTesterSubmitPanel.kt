@@ -9,7 +9,6 @@ class CodeTesterSubmitPanel(val project: Project) : JPanel(BorderLayout()) {
     init {
         val label = JBLabel("Nothing to see here (yet)")
         val toolWindowPanel = CodeTesterToolWindowPanel(
-            this::class.java,
             topComponent = CodeTesterActionToolBar(ToolBarOrientation.HORIZONTAL).apply { setTargetComponent(label) }.component,
             mainComponent = label
         )

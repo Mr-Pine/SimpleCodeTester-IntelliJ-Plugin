@@ -1,4 +1,4 @@
-package de.mr_pine.simplecodetesterplugin
+package de.mr_pine.simplecodetesterplugin.models.result
 
 import kotlinx.serialization.Serializable
 

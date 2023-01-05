@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "de.mr-pine"
-version = "1.0-SNAPSHOT"
+version = "1.0.0"
 
 repositories {
     mavenCentral()
@@ -14,7 +14,7 @@ repositories {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(18))
+        languageVersion.set(JavaLanguageVersion.of(17))
     }
 }
 

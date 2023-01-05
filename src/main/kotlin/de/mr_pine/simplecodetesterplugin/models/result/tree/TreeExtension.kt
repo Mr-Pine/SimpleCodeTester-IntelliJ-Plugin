@@ -1,7 +1,7 @@
 package de.mr_pine.simplecodetesterplugin.models.result.tree
 
 import com.intellij.openapi.project.Project
-import de.mr_pine.simplecodetesterplugin.TestCategory
+import de.mr_pine.simplecodetesterplugin.models.result.TestCategory
 import de.mr_pine.simplecodetesterplugin.models.result.CheckResult
 import de.mr_pine.simplecodetesterplugin.models.result.CodeTesterResult
 import de.mr_pine.simplecodetesterplugin.models.result.tree.node.CheckResultNode
@@ -29,13 +29,14 @@ fun Flow<CodeTesterResult>.tree(project: Project, category: TestCategory): Resul
         result.fileResults?.forEach {
             val fileResultNode = FileResultNode(project, resultTreeNode, it.key)
             it.value.forEach { checkResult ->
-                val checkResultNode = CheckResultNode(project, fileResultNode, checkResult.check, checkResult.durationMillis.milliseconds, checkResult.result == CheckResult.Result.SUCCESSFUL)
+                val checkResultNode = CheckResultNode(project, fileResultNode, checkResult.check, checkResult.durationMillis.milliseconds, checkResult.result == CheckResult.Result.SUCCESSFUL, checkResult.output)
                 fileResultNode.add(checkResultNode)
             }
             resultTreeNode.add(fileResultNode)
         }
 
         resultTreeNode.finish()
+        resultTreeNode.compilationOutput = result.compilationOutput
         println("done")
     }
 

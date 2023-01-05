@@ -5,7 +5,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import de.mr_pine.simplecodetesterplugin.CodeTester
-import de.mr_pine.simplecodetesterplugin.TestCategory
+import de.mr_pine.simplecodetesterplugin.models.result.TestCategory
 import de.mr_pine.simplecodetesterplugin.models.result.CodeTesterResult
 import de.mr_pine.simplecodetesterplugin.ui.CodeTesterResultPanel
 import de.mr_pine.simplecodetesterplugin.ui.CodeTesterSubmitPanel
@@ -23,8 +23,8 @@ class CodeTesterToolWindowFactory : ToolWindowFactory, DumbAware {
         }
 
         fun showSubmitContent() {
-            contentManager.removeContent(loggedOutContent, true)
             contentManager.addContent(submitContent)
+            contentManager.removeContent(loggedOutContent, true)
         }
         fun showLoggedOutContent() {
             contentManager.removeContent(submitContent, true)

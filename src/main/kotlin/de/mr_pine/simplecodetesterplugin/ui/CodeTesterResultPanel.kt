@@ -1,7 +1,6 @@
 package de.mr_pine.simplecodetesterplugin.ui
 
 import com.intellij.execution.filters.TextConsoleBuilderFactory
-import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ComponentContainer
 import com.intellij.ui.AnimatedIcon
@@ -17,9 +16,10 @@ import com.intellij.util.EditSourceOnDoubleClickHandler
 import com.intellij.util.EditSourceOnEnterKeyHandler
 import com.intellij.util.concurrency.Invoker
 import com.intellij.util.ui.tree.TreeUtil
-import de.mr_pine.simplecodetesterplugin.TestCategory
+import de.mr_pine.simplecodetesterplugin.models.result.TestCategory
 import de.mr_pine.simplecodetesterplugin.models.result.CodeTesterResult
 import de.mr_pine.simplecodetesterplugin.models.result.tree.CodeTesterResultTreeStructure
+import de.mr_pine.simplecodetesterplugin.models.result.tree.node.CheckResultNode
 import de.mr_pine.simplecodetesterplugin.models.result.tree.node.CodeTesterNodeRenderer
 import de.mr_pine.simplecodetesterplugin.models.result.tree.node.RootResultNode
 import de.mr_pine.simplecodetesterplugin.models.result.tree.tree
@@ -29,6 +29,7 @@ import java.awt.CardLayout
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.swing.JComponent
 import javax.swing.JPanel
+import javax.swing.tree.DefaultMutableTreeNode
 
 class CodeTesterResultPanel(val project: Project, resultFlow: Flow<CodeTesterResult>, testCategory: TestCategory) : ComponentContainer {
 
@@ -37,8 +38,6 @@ class CodeTesterResultPanel(val project: Project, resultFlow: Flow<CodeTesterRes
 
     init {
         val console = TextConsoleBuilderFactory.getInstance().createBuilder(project).console
-        console.print("test\n", ConsoleViewContentType.SYSTEM_OUTPUT)
-        console.print("test input\n", ConsoleViewContentType.USER_INPUT)
 
         val rootNode = resultFlow.tree(project, testCategory)
 
@@ -46,6 +45,14 @@ class CodeTesterResultPanel(val project: Project, resultFlow: Flow<CodeTesterRes
         val treeModel = StructureTreeModel(treeStructure, null, Invoker.forBackgroundThreadWithReadAction(this), this)
         val asyncTreeModel = AsyncTreeModel(treeModel, this)
         tree = initTree(asyncTreeModel)
+
+        tree.addTreeSelectionListener {
+            console.clear()
+            when(val node = (it.path.lastPathComponent as DefaultMutableTreeNode).userObject) {
+                is CheckResultNode -> console.print(node.content)
+                is RootResultNode -> node.compilationOutput?.let { output -> console.print(output) }
+            }
+        }
 
         val scrollPane = ScrollPaneFactory.createScrollPane(tree, SideBorder.NONE)
 
@@ -58,7 +65,6 @@ class CodeTesterResultPanel(val project: Project, resultFlow: Flow<CodeTesterRes
         }
 
         val codeTesterPanel = CodeTesterToolWindowPanel(
-            this::class.java,
             topComponent = CodeTesterActionToolBar(ToolBarOrientation.HORIZONTAL).apply { setTargetComponent(splitter) }.component,
             mainComponent = splitter
         )

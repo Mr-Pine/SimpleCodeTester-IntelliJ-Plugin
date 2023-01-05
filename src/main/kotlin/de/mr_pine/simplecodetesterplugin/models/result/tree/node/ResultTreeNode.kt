@@ -8,9 +8,8 @@ import com.intellij.ui.AnimatedIcon
 import com.intellij.ui.SimpleTextAttributes
 import javax.swing.Icon
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.seconds
 
-open class ResultTreeNode(project: Project, val parentNode: ResultTreeNode?, open var duration: Duration = (-1).seconds): PresentableNodeDescriptor<ResultTreeNode>(project, parentNode) {
+open class ResultTreeNode(project: Project, val parentNode: ResultTreeNode?, open var duration: Duration? = null): PresentableNodeDescriptor<ResultTreeNode>(project, parentNode) {
     val children = mutableListOf<ResultTreeNode>()
 
     open val hint: String? = null

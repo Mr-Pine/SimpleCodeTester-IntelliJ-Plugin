@@ -7,6 +7,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.vfs.VirtualFile
 import de.mr_pine.simplecodetesterplugin.actions.CodeTesterGetCategoriesAction
 import de.mr_pine.simplecodetesterplugin.models.result.CodeTesterResult
+import de.mr_pine.simplecodetesterplugin.models.result.TestCategory
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.java.*

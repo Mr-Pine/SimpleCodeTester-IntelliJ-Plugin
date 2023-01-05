@@ -11,7 +11,7 @@ import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.ui.popup.ListPopup
 import com.intellij.openapi.util.Condition
 import de.mr_pine.simplecodetesterplugin.CodeTester
-import de.mr_pine.simplecodetesterplugin.TestCategory
+import de.mr_pine.simplecodetesterplugin.models.result.TestCategory
 import java.awt.Dimension
 import javax.swing.JComponent
 
