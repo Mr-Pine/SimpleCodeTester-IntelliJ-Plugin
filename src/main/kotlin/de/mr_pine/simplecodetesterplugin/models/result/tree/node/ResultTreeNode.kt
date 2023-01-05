@@ -21,9 +21,9 @@ open class ResultTreeNode(project: Project, val parentNode: ResultTreeNode?, ope
 
     override fun update(presentation: PresentationData) {
         presentation.apply {
-            this@ResultTreeNode.icon = getCurrentIcon()
+            icon = getCurrentIcon()
             presentableText = nodeName
-            icon = this@ResultTreeNode.icon
+            this.setIcon(icon)
             title.takeIf { it.isNotBlank() }?.let { addText("$it: ", SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES) }
 
             nodeName.takeIf { it.isNotBlank() }?.let { addText(it, SimpleTextAttributes.REGULAR_ATTRIBUTES) }
@@ -37,7 +37,8 @@ open class ResultTreeNode(project: Project, val parentNode: ResultTreeNode?, ope
         children.add(child)
     }
 
-    open fun getCurrentIcon() = if(success) NODE_ICON_OK else NODE_ICON_ERROR
+    open fun getCurrentIcon() =
+        if(success) NODE_ICON_OK else NODE_ICON_ERROR
 
     companion object {
         private val NODE_ICON_OK: Icon = AllIcons.RunConfigurations.TestPassed
