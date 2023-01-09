@@ -41,7 +41,7 @@ jobs:
       run: chmod +x gradlew
     - name: Run with Gradle
       id: gradleStep
-      run: echo new-version=$(./gradlew -q getVersion) >> $GITHUB_OUTPUT
+      run: echo new-version=$(./gradlew -q printVersion) >> $GITHUB_OUTPUT
     
   check-version:
     needs: get-version
