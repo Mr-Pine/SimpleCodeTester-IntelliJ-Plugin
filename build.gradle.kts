@@ -78,7 +78,7 @@ abstract class CheckVersionTask @Inject constructor() : DefaultTask() {
 
         if (newVersion != null) {
             val compared = newVersion.split(".").mapIndexed { index, s ->
-                oldVersion.toString().split(".")[index].toInt().compareTo(s.toInt())
+                s.toInt().compareTo(oldVersion.toString().split(".")[index].toInt())
             }
             val major = compared[0]
             val minor = compared[1]
