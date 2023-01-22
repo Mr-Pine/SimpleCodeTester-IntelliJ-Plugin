@@ -1,0 +1,58 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
+# 1
+
+name: Plugin Workflow
+
+on:
+  pull_request:
+    branches: [ "release" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up JDK 11
+      uses: actions/setup-java@v3
+      with:
+        java-version: '11'
+        distribution: "corretto"
+    - name: Build with Gradle
+      uses: gradle/gradle-build-action@v2.3.3
+      with:
+        arguments: build
+        
+  get-version:
+    runs-on: ubuntu-latest
+    outputs: 
+      new-version: ${{ steps.gradleStep.outputs.version }}
+    steps:
+    - uses: actions/checkout@v3
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+    - name: Run with Gradle
+      id: gradleStep
+      run: echo new-version=$(./gradlew -q printVersion) >> $GITHUB_OUTPUT
+    
+  check-version:
+    needs: get-version
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: release
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+    - name: Build with Gradle
+      run: ./gradlew -q checkVersion -PnewVersion=${{ needs.get-version.outputs.version }}
+    

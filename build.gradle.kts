@@ -57,4 +57,31 @@ tasks {
     compileTestKotlin {
         kotlinOptions.jvmTarget = "17"
     }
+
+    register<PrintVersionTask>("printVersion")
+    register<CheckVersionTask>("checkVersion")
+}
+
+abstract class PrintVersionTask : DefaultTask() {
+    @TaskAction
+    fun printVersion() {
+        println(project.version)
+    }
+}
+
+abstract class CheckVersionTask @Inject constructor() : DefaultTask() {
+
+    @TaskAction
+    fun checkVersion() {
+        val newVersion = project.properties["newVersion"]?.toString()
+        val oldVersion = project.version
+
+        if (newVersion != null) {
+            newVersion.split(".").forEachIndexed { index, s ->
+                if (oldVersion.toString().split(".")[index] != s) throw Exception("Must be newer version")
+            }
+        } else {
+            throw IllegalArgumentException("No new version supplied")
+        }
+    }
 }
