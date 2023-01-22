@@ -53,16 +53,22 @@ object CodeTester {
                 }
                 refreshTokens {
                     CodeTesterCredentials[CodeTesterCredentials.CredentialType.REFRESH_TOKEN]?.let { refreshToken ->
-                        val tokenInfo: TokenInfo = client.submitForm(
+                        val refreshResult = client.submitForm(
                             url = "$url/login/get-access-token",
                             formParameters = Parameters.build {
                                 append("refreshToken", refreshToken)
                             }
-                        ) { markAsRefreshTokenRequest() }.body()
+                        ) { markAsRefreshTokenRequest() }
 
-                        CodeTesterCredentials[CodeTesterCredentials.CredentialType.ACCESS_TOKEN] = tokenInfo.token
+                        if(refreshResult.status == HttpStatusCode.Unauthorized) {
+                            logOut()
+                            null
+                        } else {
+                            val tokenInfo: TokenInfo = refreshResult.body()
+                            CodeTesterCredentials[CodeTesterCredentials.CredentialType.ACCESS_TOKEN] = tokenInfo.token
 
-                        BearerTokens(refreshToken = refreshToken, accessToken = tokenInfo.token)
+                            BearerTokens(refreshToken = refreshToken, accessToken = tokenInfo.token)
+                        }
                     }
                 }
             }
@@ -128,11 +134,14 @@ object CodeTester {
     val registerLogoutListener: (() -> Unit) -> Boolean = logoutListeners::add
 
     suspend fun getCategories() {
-        categories = client.get(
+        val result = client.get(
             "$url/check-category/get-all"
-        ).body<List<TestCategory>>().reversed()
+        )
+        if(result.status != HttpStatusCode.Unauthorized) {
+            categories = result.body<List<TestCategory>>().reversed()
 
-        logger.warn(categories.toString())
+            logger.warn(categories.toString())
+        }
     }
 
     var categories: List<TestCategory> = listOf()
@@ -172,7 +181,8 @@ object CodeTester {
         }
 
     private val resultFlowListeners: MutableList<(SharedFlow<CodeTesterResult>, TestCategory) -> Unit> = mutableListOf()
-    val registerResultFlowListener: ((SharedFlow<CodeTesterResult>, TestCategory) -> Unit) -> Boolean = resultFlowListeners::add
+    val registerResultFlowListener: ((SharedFlow<CodeTesterResult>, TestCategory) -> Unit) -> Boolean =
+        resultFlowListeners::add
 
     init {
         logger.info("refreshToken: ${CodeTesterCredentials[CodeTesterCredentials.CredentialType.REFRESH_TOKEN].toString()}")
