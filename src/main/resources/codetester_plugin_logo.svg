@@ -2,14 +2,10 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   height="40"
-   width="40"
+   height="13"
+   width="13"
    version="1.0"
    id="svg24"
-   sodipodi:docname="Logo_Codetester_Plugin.svg"
-   inkscape:version="1.2.1 (9c6d41e410, 2022-07-14)"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -17,25 +13,6 @@
    xmlns:dc="http://purl.org/dc/elements/1.1/">
   <defs
      id="defs28" />
-  <sodipodi:namedview
-     id="namedview26"
-     pagecolor="#ffffff"
-     bordercolor="#000000"
-     borderopacity="0.25"
-     inkscape:showpageshadow="2"
-     inkscape:pageopacity="0.0"
-     inkscape:pagecheckerboard="0"
-     inkscape:deskcolor="#d1d1d1"
-     showgrid="false"
-     inkscape:zoom="59.31538"
-     inkscape:cx="6.6508888"
-     inkscape:cy="10.99209"
-     inkscape:window-width="2880"
-     inkscape:window-height="1674"
-     inkscape:window-x="-12"
-     inkscape:window-y="-12"
-     inkscape:window-maximized="1"
-     inkscape:current-layer="svg24" />
   <metadata
      id="metadata2">
     <rdf:RDF>
@@ -49,7 +26,7 @@
   </metadata>
   <g
      id="g4696"
-     transform="matrix(0.05000156,0,0,0.05000236,0.25938233,1.5040681)">
+     transform="matrix(0.01625,0,0,0.01624999,0.08449909,0.48860906)">
     <path
        d="M 379.99384,655.29512 Z"
        fill-rule="evenodd"
@@ -77,8 +54,6 @@
        fill-rule="evenodd"
        fill="#000000"
        id="path14"
-       inkscape:transform-center-x="-191.37662"
-       inkscape:transform-center-y="-285.36398"
        style="opacity:1;fill:#32a189;fill-opacity:1;stroke-width:1.653" />
     <path
        d="M 379.99384,655.29512 Z"
