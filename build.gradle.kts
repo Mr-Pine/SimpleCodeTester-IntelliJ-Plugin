@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "de.mr-pine"
-version = "1.0.0"
+version = "1.1.0"
 
 repositories {
     mavenCentral()
@@ -25,10 +25,10 @@ intellij {
 }
 
 dependencies {
-    val ktorVersion = "2.2.1"
-    implementation("io.ktor:ktor-client-core:$ktorVersion")
-    implementation("io.ktor:ktor-client-java:$ktorVersion")
-    implementation("io.ktor:ktor-client-auth:$ktorVersion")
+    val ktorVersion = "2.2.2"
+    implementation("io.ktor:ktor-client-core-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-client-java-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-client-auth-jvm:$ktorVersion")
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
 
