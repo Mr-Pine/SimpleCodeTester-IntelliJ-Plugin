@@ -78,7 +78,7 @@ abstract class CheckVersionTask @Inject constructor() : DefaultTask() {
 
         if (newVersion != null) {
             newVersion.split(".").forEachIndexed { index, s ->
-                if (oldVersion.toString().split(".")[index] != s) throw Exception("Must be newer version")
+                if (oldVersion.toString().split(".")[index] != s) throw GradleException("$newVersion must be newer version than $oldVersion")
             }
         } else {
             throw IllegalArgumentException("No new version supplied")
