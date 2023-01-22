@@ -1,12 +1,12 @@
 plugins {
     id("java")
-    id("org.jetbrains.intellij") version "1.11.0"
-    kotlin("jvm") version "1.7.22"
-    kotlin("plugin.serialization") version "1.7.22"
+    id("org.jetbrains.intellij") version "1.12.0"
+    kotlin("jvm") version "1.8.0"
+    kotlin("plugin.serialization") version "1.8.0"
 }
 
 group = "de.mr-pine"
-version = "1.1.0"
+version = "1.1.1"
 
 repositories {
     mavenCentral()
