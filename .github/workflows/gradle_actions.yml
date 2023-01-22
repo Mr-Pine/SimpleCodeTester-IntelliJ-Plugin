@@ -35,7 +35,7 @@ jobs:
   get-version:
     runs-on: ubuntu-latest
     outputs: 
-      new-version: ${{ steps.gradleStep.outputs.version }}
+      new-version: ${{ steps.gradleStep.outputs.new-version }}
     steps:
     - uses: actions/checkout@v3
     - name: Grant execute permission for gradlew
@@ -54,5 +54,5 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
-      run: ./gradlew -q checkVersion -PnewVersion=${{ needs.get-version.outputs.version }}
+      run: ./gradlew -q checkVersion -PnewVersion=${{ needs.get-version.outputs.new-version }}
     
