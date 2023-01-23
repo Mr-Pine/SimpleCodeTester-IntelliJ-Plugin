@@ -16,28 +16,42 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
 
-fun Flow<CodeTesterResult>.tree(project: Project, category: TestCategory): ResultTreeNode {
+fun Flow<Result<CodeTesterResult>>.tree(project: Project, category: TestCategory): ResultTreeNode {
     val rootNode = ResultTreeNode(project, null)
     val resultTreeNode = RootResultNode(project, rootNode, category.name)
     rootNode.add(resultTreeNode)
 
     CoroutineScope(Job() + Dispatchers.IO).launch {
-        val result = first()
+        val resultResult = first()
 
-        resultTreeNode.duration = result.duration
+        if(resultResult.isSuccess) {
+            val result = resultResult.getOrThrow()
 
-        result.fileResults?.forEach {
-            val fileResultNode = FileResultNode(project, resultTreeNode, it.key)
-            it.value.forEach { checkResult ->
-                val checkResultNode = CheckResultNode(project, fileResultNode, checkResult.check, checkResult.durationMillis.milliseconds, checkResult.result == CheckResult.Result.SUCCESSFUL, checkResult.output)
-                fileResultNode.add(checkResultNode)
+            resultTreeNode.duration = result.duration
+
+            result.fileResults?.forEach {
+                val fileResultNode = FileResultNode(project, resultTreeNode, it.key)
+                it.value.forEach { checkResult ->
+                    val checkResultNode = CheckResultNode(
+                        project,
+                        fileResultNode,
+                        checkResult.check,
+                        checkResult.durationMillis.milliseconds,
+                        checkResult.result == CheckResult.Result.SUCCESSFUL,
+                        checkResult.output
+                    )
+                    fileResultNode.add(checkResultNode)
+                }
+                resultTreeNode.add(fileResultNode)
             }
-            resultTreeNode.add(fileResultNode)
-        }
 
-        resultTreeNode.finish()
-        resultTreeNode.compilationOutput = result.compilationOutput
-        println("done")
+            resultTreeNode.finish()
+            resultTreeNode.compilationOutput = result.compilationOutput
+            println("done")
+        } else {
+            resultTreeNode.errorMessage = resultResult.exceptionOrNull()!!.message
+            resultTreeNode.finish()
+        }
     }
 
     return rootNode

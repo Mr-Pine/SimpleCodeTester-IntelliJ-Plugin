@@ -30,7 +30,7 @@ class CodeTesterToolWindowFactory : ToolWindowFactory, DumbAware {
             contentManager.removeContent(submitContent, true)
             contentManager.addContent(loggedOutContent)
         }
-        fun showResultContent(resultFlow: Flow<CodeTesterResult>, testCategory: TestCategory) {
+        fun showResultContent(resultFlow: Flow<Result<CodeTesterResult>>, testCategory: TestCategory) {
             val resultPanel = CodeTesterResultPanel(project, resultFlow, testCategory)
             val resultContent = contentManager.factory.createContent(resultPanel.component, "Result", false).apply {
                 preferredFocusableComponent = resultPanel.preferredFocusableComponent

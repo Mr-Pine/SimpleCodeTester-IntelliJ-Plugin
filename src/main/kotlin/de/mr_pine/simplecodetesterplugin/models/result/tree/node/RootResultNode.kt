@@ -6,8 +6,9 @@ import de.mr_pine.simplecodetesterplugin.models.result.CompilationOutput
 class RootResultNode(project: Project, parentNode: ResultTreeNode?, override val title: String) : ResultTreeNode(project, parentNode) {
     private var finished = false
     var compilationOutput: CompilationOutput? = null
+    var errorMessage: String? = null
     override val success: Boolean
-        get() = children.all { it.success }
+        get() = errorMessage == null && children.all { it.success }
 
     fun finish() {
         finished = true
