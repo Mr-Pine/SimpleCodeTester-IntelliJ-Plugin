@@ -170,10 +170,14 @@ object CodeTester {
 
                     println(response.body<String>())
 
-                    val result = response.body<CodeTesterResult>()
-                        .apply {
-                            duration = (response.responseTime.timestamp - response.requestTime.timestamp).milliseconds
-                        }
+                    val result = try {
+                        response.body<CodeTesterResult>()
+                            .apply {
+                                duration = (response.responseTime.timestamp - response.requestTime.timestamp).milliseconds
+                            }
+                    } catch (e: IllegalArgumentException) { // Please forward any complaints to I-Al-Istannen
+                        CodeTesterResult(compilationOutput = response.body())
+                    }
 
 
                     resultFlow.emit(Result.success(result))
