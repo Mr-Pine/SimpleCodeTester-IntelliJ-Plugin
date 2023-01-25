@@ -6,5 +6,6 @@ import kotlinx.serialization.Serializable
 data class CompilationOutput(
     val diagnostics: Map<String, List<String>>,
     val successful: Boolean,
-    val output: String
+    val output: String,
+    val files: List<String>
 )

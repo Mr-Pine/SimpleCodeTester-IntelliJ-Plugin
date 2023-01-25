@@ -60,7 +60,7 @@ object CodeTester {
                             }
                         ) { markAsRefreshTokenRequest() }
 
-                        if(refreshResult.status == HttpStatusCode.Unauthorized) {
+                        if (refreshResult.status == HttpStatusCode.Unauthorized) {
                             logOut()
                             null
                         } else {
@@ -137,7 +137,7 @@ object CodeTester {
         val result = client.get(
             "$url/check-category/get-all"
         )
-        if(result.status != HttpStatusCode.Unauthorized) {
+        if (result.status != HttpStatusCode.Unauthorized) {
             categories = result.body<List<TestCategory>>().reversed()
 
             logger.warn(categories.toString())
@@ -150,38 +150,49 @@ object CodeTester {
     suspend fun submitFiles(
         category: TestCategory,
         files: List<VirtualFile>
-    ): SharedFlow<CodeTesterResult> =
+    ): SharedFlow<Result<CodeTesterResult>> =
         coroutineScope {
-            val resultFlow: MutableSharedFlow<CodeTesterResult> = MutableSharedFlow()
+            val resultFlow: MutableSharedFlow<Result<CodeTesterResult>> = MutableSharedFlow()
             async {
-                val response = client.submitFormWithBinaryData(
-                    url = "$url/test/multiple/${category.id}",
-                    formData {
-                        files.forEach { file ->
-                            append(file.name, file.contentsToByteArray(), Headers.build {
-                                append(HttpHeaders.ContentType, ContentType.Application.OctetStream)
-                                append(HttpHeaders.ContentDisposition, "filename=\"${file.name}\"")
-                            })
+
+                try {
+                    val response = client.submitFormWithBinaryData(
+                        url = "$url/test/multiple/${category.id}",
+                        formData {
+                            files.forEach { file ->
+                                append(file.name, file.contentsToByteArray(), Headers.build {
+                                    append(HttpHeaders.ContentType, ContentType.Application.OctetStream)
+                                    append(HttpHeaders.ContentDisposition, "filename=\"${file.name}\"")
+                                })
+                            }
                         }
+                    )
+
+                    println(response.body<String>())
+
+                    val result = try {
+                        response.body<CodeTesterResult>()
+                            .apply {
+                                duration = (response.responseTime.timestamp - response.requestTime.timestamp).milliseconds
+                            }
+                    } catch (e: IllegalArgumentException) { // Please forward any complaints to I-Al-Istannen
+                        CodeTesterResult(compilationOutput = response.body())
                     }
-                )
 
-                println(response.body<String>())
 
-                val result = response.body<CodeTesterResult>()
-                    .apply {
-                        duration = (response.responseTime.timestamp - response.requestTime.timestamp).milliseconds
-                    }
-
-                resultFlow.emit(result)
+                    resultFlow.emit(Result.success(result))
+                } catch (e: Exception) {
+                    resultFlow.emit(Result.failure(e))
+                }
 
             }
             resultFlowListeners.forEach { ApplicationManager.getApplication().invokeLater { it(resultFlow, category) } }
             return@coroutineScope resultFlow
         }
 
-    private val resultFlowListeners: MutableList<(SharedFlow<CodeTesterResult>, TestCategory) -> Unit> = mutableListOf()
-    val registerResultFlowListener: ((SharedFlow<CodeTesterResult>, TestCategory) -> Unit) -> Boolean =
+    private val resultFlowListeners: MutableList<(SharedFlow<Result<CodeTesterResult>>, TestCategory) -> Unit> =
+        mutableListOf()
+    val registerResultFlowListener: ((SharedFlow<Result<CodeTesterResult>>, TestCategory) -> Unit) -> Boolean =
         resultFlowListeners::add
 
     init {

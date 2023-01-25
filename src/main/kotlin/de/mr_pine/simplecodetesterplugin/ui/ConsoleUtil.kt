@@ -17,12 +17,24 @@ fun ConsoleView.print(lines: List<OutputLine>) = lines.forEach {
 }
 
 fun ConsoleView.print(compilationOutput: CompilationOutput) {
-    if (compilationOutput.successful)
-        println("Compilation successful", ConsoleViewContentType.LOG_VERBOSE_OUTPUT)
+    val contentType =
+        if (compilationOutput.successful) ConsoleViewContentType.LOG_VERBOSE_OUTPUT
+        else ConsoleViewContentType.LOG_ERROR_OUTPUT
+
+    val mainText = if (compilationOutput.successful)
+        "Compilation successful\n"
     else
-        println("Compilation not successful: ", ConsoleViewContentType.LOG_ERROR_OUTPUT)
-    println("\n", ConsoleViewContentType.NORMAL_OUTPUT)
-    println(compilationOutput.output, ConsoleViewContentType.LOG_INFO_OUTPUT)
+        "Compilation not successful:\n${compilationOutput.diagnostics.toDiagnosticString()}"
+
+    println(mainText, contentType)
+    println(compilationOutput.output, contentType)
 }
+
+private fun Map<String, List<String>>.toDiagnosticString() =
+    this.entries.joinToString("\n\n") {
+        val valueString = it.value.joinToString("\n") { it.split("\n").joinToString("\n\t") }
+        "${it.key}\n\t$valueString"
+    }
+
 
 fun ConsoleView.println(text: String, contentType: ConsoleViewContentType) = print("${text}\n", contentType)
