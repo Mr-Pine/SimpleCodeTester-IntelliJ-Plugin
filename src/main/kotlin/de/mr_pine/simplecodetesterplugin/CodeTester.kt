@@ -17,11 +17,12 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
+import io.ktor.serialization.*
 import io.ktor.serialization.kotlinx.json.*
-import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlin.time.Duration.Companion.milliseconds
@@ -153,7 +154,7 @@ object CodeTester {
     ): SharedFlow<Result<CodeTesterResult>> =
         coroutineScope {
             val resultFlow: MutableSharedFlow<Result<CodeTesterResult>> = MutableSharedFlow()
-            async {
+            launch {
 
                 try {
                     val response = client.submitFormWithBinaryData(
@@ -175,7 +176,7 @@ object CodeTester {
                             .apply {
                                 duration = (response.responseTime.timestamp - response.requestTime.timestamp).milliseconds
                             }
-                    } catch (e: IllegalArgumentException) { // Please forward any complaints to I-Al-Istannen
+                    } catch (e: JsonConvertException) { // Please forward any complaints to I-Al-Istannen
                         CodeTesterResult(compilationOutput = response.body())
                     }
 
