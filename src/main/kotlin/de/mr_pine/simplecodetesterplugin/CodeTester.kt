@@ -1,9 +1,11 @@
 package de.mr_pine.simplecodetesterplugin
 
+import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.LogLevel
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import de.mr_pine.simplecodetesterplugin.actions.CodeTesterGetCategoriesAction
 import de.mr_pine.simplecodetesterplugin.models.result.CodeTesterResult
@@ -28,7 +30,10 @@ import kotlinx.serialization.json.Json
 import kotlin.time.Duration.Companion.milliseconds
 
 object CodeTester {
+    private const val testIdProperty = "de.mr_pine.simplecodetesterplugin.testId"
+
     private val logger = Logger.getInstance(CodeTester.javaClass).apply { setLevel(LogLevel.DEBUG) }
+    private var propertiesComponent: PropertiesComponent? = null
 
     private const val url = "https://codetester.ialistannen.de"
     private val client = HttpClient(Java) {
@@ -147,6 +152,11 @@ object CodeTester {
 
     var categories: List<TestCategory> = listOf()
     var currentCategory: TestCategory? = null
+        set(value) {
+            field = value
+            if(value != null)
+            propertiesComponent?.setValue(testIdProperty, value.id, -1)
+        }
 
     suspend fun submitFiles(
         category: TestCategory,
@@ -195,6 +205,15 @@ object CodeTester {
         mutableListOf()
     val registerResultFlowListener: ((SharedFlow<Result<CodeTesterResult>>, TestCategory) -> Unit) -> Boolean =
         resultFlowListeners::add
+
+    fun loadProperties(project: Project?) {
+        propertiesComponent = project?.let { PropertiesComponent.getInstance(it) } ?: PropertiesComponent.getInstance()
+        val testId = propertiesComponent?.getInt(testIdProperty, -1)?.takeIf { it >= 0 }
+        val category = categories.find { it.id == testId }
+        if (testId != null && category != null) {
+            currentCategory = category
+        }
+    }
 
     init {
         logger.info("refreshToken: ${CodeTesterCredentials[CodeTesterCredentials.CredentialType.REFRESH_TOKEN].toString()}")

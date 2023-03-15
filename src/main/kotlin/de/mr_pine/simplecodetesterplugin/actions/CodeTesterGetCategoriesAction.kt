@@ -16,6 +16,7 @@ class CodeTesterGetCategoriesAction: DumbAwareAction() {
     override fun actionPerformed(e: AnActionEvent) {
         CoroutineScope(Job() + Dispatchers.IO).launch {
             CodeTester.getCategories()
+            CodeTester.loadProperties(e.project)
         }
     }
 
