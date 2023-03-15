@@ -9,6 +9,7 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.diagnostic.LogLevel
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.roots.ModuleRootManager
 import com.intellij.openapi.vfs.VfsUtilCore
@@ -31,17 +32,23 @@ class CodeTesterSubmitAllAction(text: String): NotificationAction(text) {
         println("Submitting")
         event.project?.let { project ->
             val sourceRoot = ModuleRootManager.getInstance(ModuleManager.getInstance(project).modules[0]).sourceRoots[0]
-            val fileList = mutableListOf<VirtualFile>()
-            VfsUtilCore.iterateChildrenRecursively(
-                sourceRoot,
-                { true },
-                { file ->
-                    if (!file.isDirectory && (file.extension ?: "") == "java") fileList.add(file)
-                    true
-                }
-            )
+
+            FileDocumentManager.getInstance().saveAllDocuments()
 
             CoroutineScope(Job() + Dispatchers.IO).launch {
+
+                val fileList = mutableListOf<VirtualFile>()
+                VfsUtilCore.iterateChildrenRecursively(
+                    sourceRoot,
+                    { true },
+                    { file ->
+                        if (!file.isDirectory && (file.extension ?: "") == "java") fileList.add(file)
+                        true
+                    }
+                )
+
+                LOG.info(fileList.toString())
+
                 val category = CodeTester.currentCategory
                 if (category != null) {
                     val result = CodeTester.submitFiles(category = category, files = fileList)
@@ -57,7 +64,6 @@ class CodeTesterSubmitAllAction(text: String): NotificationAction(text) {
                 }
             }
 
-            LOG.info(fileList.toString())
         }
     }
 
