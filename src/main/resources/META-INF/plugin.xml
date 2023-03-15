@@ -21,13 +21,13 @@
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
     <depends>com.intellij.modules.platform</depends>
 
-    <change-notes><![CDATA[
+    <!--change-notes><![CDATA[
         <ul>
             <li>Save files on submit (should fix a bug where outdated code is uploaded)</li>
             <li>Selected catergory now persists between sessions</li>
             <li>Fixed an exception when code didn't compile</li>
         </ul>
-    ]]></change-notes>
+    ]]></change-notes-->
 
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
