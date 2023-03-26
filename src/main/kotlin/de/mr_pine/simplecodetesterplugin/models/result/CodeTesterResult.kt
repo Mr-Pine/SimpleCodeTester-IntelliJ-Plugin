@@ -7,7 +7,8 @@ import kotlin.time.Duration
 @Serializable
 data class CodeTesterResult(
     val fileResults: Map<String, List<CheckResult>>? = null,
-    val compilationOutput: CompilationOutput
+    val compilationOutput: CompilationOutput,
+    val timeoutData: TimeoutData? = null
 ) {
     @Transient
     var duration: Duration? = null

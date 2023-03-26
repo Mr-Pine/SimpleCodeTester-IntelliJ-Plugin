@@ -4,10 +4,7 @@ import com.intellij.openapi.project.Project
 import de.mr_pine.simplecodetesterplugin.models.result.CheckResult
 import de.mr_pine.simplecodetesterplugin.models.result.CodeTesterResult
 import de.mr_pine.simplecodetesterplugin.models.result.TestCategory
-import de.mr_pine.simplecodetesterplugin.models.result.tree.node.CheckResultNode
-import de.mr_pine.simplecodetesterplugin.models.result.tree.node.FileResultNode
-import de.mr_pine.simplecodetesterplugin.models.result.tree.node.ResultTreeNode
-import de.mr_pine.simplecodetesterplugin.models.result.tree.node.RootResultNode
+import de.mr_pine.simplecodetesterplugin.models.result.tree.node.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -45,12 +42,15 @@ fun Flow<Result<CodeTesterResult>>.tree(project: Project, category: TestCategory
                 resultTreeNode.add(fileResultNode)
             }
 
+            if (result.timeoutData != null) {
+                resultTreeNode.add(TimeoutNode(project, resultTreeNode, result.timeoutData.lastTest))
+            }
+
             resultTreeNode.finish()
             resultTreeNode.compilationOutput = result.compilationOutput
             println("done")
         } else {
-            resultTreeNode.errorMessage = resultResult.exceptionOrNull()!!
-                .let { error -> "Error ${error::class.qualifiedName} occured: ${error.message}\nat: ${error.stackTraceToString()}" }
+            resultTreeNode.errorMessage = resultResult.exceptionOrNull()!!.message
             resultTreeNode.finish()
         }
     }

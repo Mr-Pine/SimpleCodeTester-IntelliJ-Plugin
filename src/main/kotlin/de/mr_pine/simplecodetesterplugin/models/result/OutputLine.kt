@@ -4,8 +4,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class OutputLine(
-    val type: OutputType,
-    val content: String
+    val content: String,
+    val type: OutputType
 ) {
     @Suppress("unused")
     enum class OutputType {

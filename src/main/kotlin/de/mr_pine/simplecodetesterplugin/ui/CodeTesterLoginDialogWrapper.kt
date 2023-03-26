@@ -6,7 +6,7 @@ import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
 import javax.swing.JComponent
 
-class CodeTesterLoginDialogWrapper: DialogWrapper(true) {
+class CodeTesterLoginDialogWrapper : DialogWrapper(true) {
 
     var username = ""
     var password = ""

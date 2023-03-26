@@ -6,7 +6,8 @@ import org.jetbrains.annotations.NonNls
 import javax.swing.Box
 
 class CodeTesterActionToolBar(orientation: ToolBarOrientation, place: @NonNls String = "???") {
-    private val actionGroup = ActionManager.getInstance().getAction("de.mr_pine.simplecodetesterplugin.actions.CodeTesterToolbarActions") as ActionGroup
+    private val actionGroup = ActionManager.getInstance()
+        .getAction("de.mr_pine.simplecodetesterplugin.actions.CodeTesterToolbarActions") as ActionGroup
 
     private val toolbar = ActionManager.getInstance().createActionToolbar(place, actionGroup, orientation.value)
 

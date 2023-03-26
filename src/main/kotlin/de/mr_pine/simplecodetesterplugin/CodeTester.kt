@@ -59,12 +59,10 @@ object CodeTester {
                 }
                 refreshTokens {
                     CodeTesterCredentials[CodeTesterCredentials.CredentialType.REFRESH_TOKEN]?.let { refreshToken ->
-                        val refreshResult = client.submitForm(
-                            url = "$url/login/get-access-token",
-                            formParameters = Parameters.build {
+                        val refreshResult =
+                            client.submitForm(url = "$url/login/get-access-token", formParameters = Parameters.build {
                                 append("refreshToken", refreshToken)
-                            }
-                        ) { markAsRefreshTokenRequest() }
+                            }) { markAsRefreshTokenRequest() }
 
                         if (refreshResult.status == HttpStatusCode.Unauthorized) {
                             logOut()
@@ -83,20 +81,14 @@ object CodeTester {
 
     @Serializable
     private data class TokenInfo(
-        val token: String,
-        val displayName: String,
-        val userName: String,
-        val roles: List<String>
+        val token: String, val displayName: String, val userName: String, val roles: List<String>
     )
 
     suspend fun login(username: String, password: String) {
-        val loginInfo: LoginInfo = client.submitForm(
-            url = "$url/login",
-            formParameters = Parameters.build {
-                append("username", username)
-                append("password", password)
-            }
-        ).body()
+        val loginInfo: LoginInfo = client.submitForm(url = "$url/login", formParameters = Parameters.build {
+            append("username", username)
+            append("password", password)
+        }).body()
 
         CodeTesterCredentials[CodeTesterCredentials.CredentialType.REFRESH_TOKEN] = loginInfo.token
         loginListeners.forEach { ApplicationManager.getApplication().invokeLater(it) }
@@ -111,20 +103,18 @@ object CodeTester {
     val loggedIn: Boolean
         get() = CodeTesterCredentials[CodeTesterCredentials.CredentialType.REFRESH_TOKEN] != null
 
-    private val loginListeners: MutableList<() -> Unit> = mutableListOf(
-        {
-            CodeTesterGetCategoriesAction().actionPerformed(
-                AnActionEvent(
-                    null,
-                    DataContext.EMPTY_CONTEXT,
-                    ActionPlaces.UNKNOWN,
-                    Presentation(),
-                    ActionManager.getInstance(),
-                    0
-                )
+    private val loginListeners: MutableList<() -> Unit> = mutableListOf({
+        CodeTesterGetCategoriesAction().actionPerformed(
+            AnActionEvent(
+                null,
+                DataContext.EMPTY_CONTEXT,
+                ActionPlaces.UNKNOWN,
+                Presentation(),
+                ActionManager.getInstance(),
+                0
             )
-        }
-    )
+        )
+    })
 
     val registerLoginListener: (() -> Unit) -> Boolean = loginListeners::add
 
@@ -154,52 +144,60 @@ object CodeTester {
     var currentCategory: TestCategory? = null
         set(value) {
             field = value
-            if(value != null)
-            propertiesComponent?.setValue(testIdProperty, value.id, -1)
+            if (value != null) propertiesComponent?.setValue(testIdProperty, value.id, -1)
         }
 
     suspend fun submitFiles(
-        category: TestCategory,
-        files: List<VirtualFile>
-    ): SharedFlow<Result<CodeTesterResult>> =
-        coroutineScope {
-            val resultFlow: MutableSharedFlow<Result<CodeTesterResult>> = MutableSharedFlow()
-            launch {
+        category: TestCategory, files: List<VirtualFile>
+    ): SharedFlow<Result<CodeTesterResult>> = coroutineScope {
+        val resultFlow: MutableSharedFlow<Result<CodeTesterResult>> = MutableSharedFlow()
+        launch {
+
+            try {
+                val response = client.submitFormWithBinaryData(url = "$url/test/multiple/${category.id}", formData {
+                    files.forEach { file ->
+                        append(file.name, file.contentsToByteArray(), Headers.build {
+                            append(HttpHeaders.ContentType, ContentType.Application.OctetStream)
+                            append(HttpHeaders.ContentDisposition, "filename=\"${file.name}\"")
+                        })
+                    }
+                })
+
+                println(response.body<String>())
 
                 try {
-                    val response = client.submitFormWithBinaryData(
-                        url = "$url/test/multiple/${category.id}",
-                        formData {
-                            files.forEach { file ->
-                                append(file.name, file.contentsToByteArray(), Headers.build {
-                                    append(HttpHeaders.ContentType, ContentType.Application.OctetStream)
-                                    append(HttpHeaders.ContentDisposition, "filename=\"${file.name}\"")
-                                })
-                            }
-                        }
-                    )
-
-                    println(response.body<String>())
-
                     val result = try {
-                        response.body<CodeTesterResult>()
-                            .apply {
-                                duration = (response.responseTime.timestamp - response.requestTime.timestamp).milliseconds
-                            }
+                        response.body<CodeTesterResult>().apply {
+                            duration =
+                                (response.responseTime.timestamp - response.requestTime.timestamp).milliseconds
+                        }
                     } catch (e: JsonConvertException) { // Please forward any complaints to I-Al-Istannen
                         CodeTesterResult(compilationOutput = response.body())
                     }
 
-
-                    resultFlow.emit(Result.success(result))
+                    result.let { resultFlow.emit(Result.success(it)) }
                 } catch (e: Exception) {
-                    resultFlow.emit(Result.failure(e))
+                    val exception = SubmitException(e, response.body())
+                    resultFlow.emit(Result.failure(exception))
                 }
 
+
+            } catch (e: Exception) {
+                resultFlow.emit(Result.failure(SubmitException(e)))
             }
-            resultFlowListeners.forEach { ApplicationManager.getApplication().invokeLater { it(resultFlow, category) } }
-            return@coroutineScope resultFlow
+
         }
+        resultFlowListeners.forEach { ApplicationManager.getApplication().invokeLater { it(resultFlow, category) } }
+        return@coroutineScope resultFlow
+    }
+
+    class SubmitException(msg: String) : Exception(msg) {
+        constructor(
+            e: Exception, responseString: String
+        ) : this("Exception ${e::class.qualifiedName} occurred during response parsing of \n${responseString}\n Caused by: ${e.cause} \n\n\nStacktrace: \n${e.stackTraceToString()}")
+
+        constructor(e: Exception) : this("Error ${e::class.qualifiedName} occured: ${e.message}\nat: ${e.stackTraceToString()}")
+    }
 
     private val resultFlowListeners: MutableList<(SharedFlow<Result<CodeTesterResult>>, TestCategory) -> Unit> =
         mutableListOf()

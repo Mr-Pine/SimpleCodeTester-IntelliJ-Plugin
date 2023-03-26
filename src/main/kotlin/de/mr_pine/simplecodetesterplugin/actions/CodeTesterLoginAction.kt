@@ -15,7 +15,7 @@ class CodeTesterLoginAction(text: String) : NotificationAction(text) {
 
     override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
 
-    constructor(): this("")
+    constructor() : this("")
 
     override fun actionPerformed(e: AnActionEvent, notification: Notification) = actionPerformed(e)
     override fun actionPerformed(e: AnActionEvent) {
@@ -28,9 +28,4 @@ class CodeTesterLoginAction(text: String) : NotificationAction(text) {
         }
     }
 
-    override fun update(event: AnActionEvent) {
-        super.update(event)
-
-        //event.presentation.icon = icon
-    }
 }

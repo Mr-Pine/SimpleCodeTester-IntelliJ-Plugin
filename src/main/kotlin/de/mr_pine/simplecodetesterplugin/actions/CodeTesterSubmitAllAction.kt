@@ -21,10 +21,11 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-class CodeTesterSubmitAllAction(text: String): NotificationAction(text) {
+class CodeTesterSubmitAllAction(text: String) : NotificationAction(text) {
 
     @Suppress("unused")
-    constructor(): this("")
+    constructor() : this("")
+
     override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
     override fun actionPerformed(e: AnActionEvent, notification: Notification) = actionPerformed(e)

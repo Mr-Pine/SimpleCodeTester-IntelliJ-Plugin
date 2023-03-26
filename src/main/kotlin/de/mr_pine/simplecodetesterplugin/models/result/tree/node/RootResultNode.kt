@@ -2,6 +2,7 @@ package de.mr_pine.simplecodetesterplugin.models.result.tree.node
 
 import com.intellij.openapi.project.Project
 import de.mr_pine.simplecodetesterplugin.models.result.CompilationOutput
+import de.mr_pine.simplecodetesterplugin.models.result.OutputLine
 
 class RootResultNode(project: Project, parentNode: ResultTreeNode?, override val title: String) :
     ResultTreeNode(project, parentNode) {
@@ -27,4 +28,17 @@ class RootResultNode(project: Project, parentNode: ResultTreeNode?, override val
     }
 
     override fun getCurrentIcon() = if (finished) super.getCurrentIcon() else NODE_ICON_RUNNING
+
+    override val output: List<OutputLine>
+        get() {
+            val outputList = mutableListOf<OutputLine>()
+            if (errorMessage != null)
+                outputList.add(OutputLine(errorMessage!!, OutputLine.OutputType.ERROR))
+
+            if (compilationOutput != null) {
+                outputList += compilationOutput!!.outputLines
+            }
+
+            return outputList
+        }
 }

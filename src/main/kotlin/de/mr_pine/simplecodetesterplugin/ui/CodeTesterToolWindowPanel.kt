@@ -11,7 +11,7 @@ class CodeTesterToolWindowPanel(
     private val rightComponent: JComponent? = null
 ) {
 
-    private val basePanel = BorderLayoutPanel(1,1).apply {
+    private val basePanel = BorderLayoutPanel(1, 1).apply {
         mainComponent?.let { add(it, BorderLayout.CENTER) }
         topComponent?.let { add(it, BorderLayout.NORTH) }
         leftComponent?.let { add(it, BorderLayout.WEST) }

@@ -11,7 +11,7 @@ import java.awt.Shape
 import javax.swing.JTree
 import javax.swing.tree.DefaultMutableTreeNode
 
-class CodeTesterNodeRenderer: NodeRenderer() {
+class CodeTesterNodeRenderer : NodeRenderer() {
     private var durationText: String? = null
     private var durationColor: Color? = null
     private var durationWidth = 0

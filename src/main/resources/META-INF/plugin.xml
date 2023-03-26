@@ -23,9 +23,8 @@
 
     <change-notes><![CDATA[
         <ul>
-            <li>Save files on submit (should fix a bug where outdated code is uploaded)</li>
-            <li>Selected catergory now persists between sessions</li>
-            <li>Fixed an exception when code didn't compile</li>
+            <li>Better error output</li>
+            <li>Timeouts are displayed correctly</li>
         </ul>
     ]]></change-notes>
 

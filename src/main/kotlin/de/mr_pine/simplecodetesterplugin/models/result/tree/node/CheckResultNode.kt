@@ -7,10 +7,8 @@ import kotlin.time.Duration
 class CheckResultNode(
     project: Project,
     parentNode: FileResultNode,
-    checkName: String,
+    override val title: String,
     override var duration: Duration?,
     override val success: Boolean,
-    val content: List<OutputLine>
-) : ResultTreeNode(project, parentNode) {
-    override val title = checkName
-}
+    override val output: List<OutputLine>
+) : ResultTreeNode(project, parentNode)
