@@ -7,9 +7,13 @@ import de.mr_pine.simplecodetesterplugin.models.result.tree.node.ResultTreeNode
 class CodeTesterResultTreeStructure(private val root: ResultTreeNode) : AbstractTreeStructure() {
     override fun getRootElement() = root
 
-    override fun getChildElements(element: Any): Array<Any> = if(element is ResultTreeNode) element.children.toTypedArray() else throw IllegalArgumentException("element must be ResultTreeNode")
+    override fun getChildElements(element: Any): Array<Any> =
+        if (element is ResultTreeNode) element.children.toTypedArray()
+        else throw IllegalArgumentException("element must be ResultTreeNode")
 
-    override fun getParentElement(element: Any): Any?  = if(element is ResultTreeNode) element.parentNode else throw IllegalArgumentException("element must be ResultTreeNode")
+    override fun getParentElement(element: Any): Any? =
+        if (element is ResultTreeNode) element.parentNode
+        else throw IllegalArgumentException("element must be ResultTreeNode")
 
     override fun createDescriptor(element: Any, parentDescriptor: NodeDescriptor<*>?) = element as NodeDescriptor<*>
 

@@ -35,7 +35,7 @@ class RootResultNode(project: Project, parentNode: ResultTreeNode?, override val
             if (errorMessage != null)
                 outputList.add(OutputLine(errorMessage!!, OutputLine.OutputType.ERROR))
 
-            if(compilationOutput != null) {
+            if (compilationOutput != null) {
                 outputList += compilationOutput!!.outputLines
             }
 

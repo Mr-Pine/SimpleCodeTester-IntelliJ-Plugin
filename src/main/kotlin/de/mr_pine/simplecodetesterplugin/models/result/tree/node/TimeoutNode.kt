@@ -15,16 +15,16 @@ open class TimeoutNode(project: Project, parentNode: ResultTreeNode?, val lastRu
 
     override val output
         get(): List<OutputLine> {
-        val contentType = OutputLine.OutputType.ERROR
-        return listOf(
-            OutputLine(
-                "Codetester timed out during test $lastRunTest",
-                contentType
-            ),
-            OutputLine(
-                "Not all tests were run!",
-                contentType
+            val contentType = OutputLine.OutputType.ERROR
+            return listOf(
+                OutputLine(
+                    "Codetester timed out during test $lastRunTest",
+                    contentType
+                ),
+                OutputLine(
+                    "Not all tests were run!",
+                    contentType
+                )
             )
-        )
-    }
+        }
 }

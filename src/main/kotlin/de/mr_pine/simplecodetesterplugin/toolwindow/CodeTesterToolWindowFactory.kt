@@ -18,18 +18,21 @@ class CodeTesterToolWindowFactory : ToolWindowFactory, DumbAware {
         val loggedOutContent = contentManager.factory.createContent(loggedOutDialogPanel(), null, false).apply {
             isCloseable = false
         }
-        val submitContent = contentManager.factory.createContent(CodeTesterSubmitPanel(project), "Submit", false).apply {
-            isCloseable = false
-        }
+        val submitContent =
+            contentManager.factory.createContent(CodeTesterSubmitPanel(project), "Submit", false).apply {
+                isCloseable = false
+            }
 
         fun showSubmitContent() {
             contentManager.addContent(submitContent)
             contentManager.removeContent(loggedOutContent, true)
         }
+
         fun showLoggedOutContent() {
             contentManager.removeContent(submitContent, true)
             contentManager.addContent(loggedOutContent)
         }
+
         fun showResultContent(resultFlow: Flow<Result<CodeTesterResult>>, testCategory: TestCategory) {
             val resultPanel = CodeTesterResultPanel(project, resultFlow, testCategory)
             val resultContent = contentManager.factory.createContent(resultPanel.component, "Result", false).apply {

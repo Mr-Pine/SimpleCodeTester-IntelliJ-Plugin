@@ -168,9 +168,9 @@ object CodeTester {
                 try {
                     val result = try {
                         response.body<CodeTesterResult>().apply {
-                                duration =
-                                    (response.responseTime.timestamp - response.requestTime.timestamp).milliseconds
-                            }
+                            duration =
+                                (response.responseTime.timestamp - response.requestTime.timestamp).milliseconds
+                        }
                     } catch (e: JsonConvertException) { // Please forward any complaints to I-Al-Istannen
                         CodeTesterResult(compilationOutput = response.body())
                     }

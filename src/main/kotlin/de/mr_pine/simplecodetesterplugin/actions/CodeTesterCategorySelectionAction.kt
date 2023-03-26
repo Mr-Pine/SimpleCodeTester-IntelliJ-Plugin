@@ -15,7 +15,7 @@ import de.mr_pine.simplecodetesterplugin.models.result.TestCategory
 import java.awt.Dimension
 import javax.swing.JComponent
 
-class CodeTesterCategorySelectionComboBoxAction: ComboBoxAction(), DumbAware {
+class CodeTesterCategorySelectionComboBoxAction : ComboBoxAction(), DumbAware {
     override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
     private val icon = AllIcons.Actions.ListChanges
@@ -53,14 +53,15 @@ class CodeTesterCategorySelectionComboBoxAction: ComboBoxAction(), DumbAware {
         return popup
     }
 
-    override fun getPreselectCondition() = Condition<AnAction> { if(it is SelectCategoryAction) it.isSelected else false }
+    override fun getPreselectCondition() =
+        Condition<AnAction> { if (it is SelectCategoryAction) it.isSelected else false }
 
     override fun shouldShowDisabledActions() = true
 
     private class SelectCategoryAction(
         private val category: TestCategory,
         val isSelected: Boolean
-    ): DumbAwareAction() {
+    ) : DumbAwareAction() {
 
         init {
             val name = category.name
@@ -76,10 +77,10 @@ class CodeTesterCategorySelectionComboBoxAction: ComboBoxAction(), DumbAware {
     }
 }
 
-class CodeTesterCategorySelectionNotificationAction(text: String): NotificationAction(text) {
+class CodeTesterCategorySelectionNotificationAction(text: String) : NotificationAction(text) {
 
     @Suppress("unused")
-    constructor(): this("")
+    constructor() : this("")
 
     private val selectionAction = CodeTesterCategorySelectionComboBoxAction()
     override fun actionPerformed(e: AnActionEvent, notification: Notification) = selectionAction.actionPerformed(e)
