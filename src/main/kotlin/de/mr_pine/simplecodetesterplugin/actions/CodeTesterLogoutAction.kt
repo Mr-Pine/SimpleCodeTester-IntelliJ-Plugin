@@ -1,6 +1,5 @@
 package de.mr_pine.simplecodetesterplugin.actions
 
-import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAwareAction
 import de.mr_pine.simplecodetesterplugin.CodeTester

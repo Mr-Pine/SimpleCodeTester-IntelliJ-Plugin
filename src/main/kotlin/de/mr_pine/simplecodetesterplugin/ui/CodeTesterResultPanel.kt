@@ -17,12 +17,13 @@ import com.intellij.util.EditSourceOnDoubleClickHandler
 import com.intellij.util.EditSourceOnEnterKeyHandler
 import com.intellij.util.concurrency.Invoker
 import com.intellij.util.ui.tree.TreeUtil
-import de.mr_pine.simplecodetesterplugin.models.result.TestCategory
 import de.mr_pine.simplecodetesterplugin.models.result.CodeTesterResult
+import de.mr_pine.simplecodetesterplugin.models.result.TestCategory
 import de.mr_pine.simplecodetesterplugin.models.result.tree.CodeTesterResultTreeStructure
 import de.mr_pine.simplecodetesterplugin.models.result.tree.node.CheckResultNode
 import de.mr_pine.simplecodetesterplugin.models.result.tree.node.CodeTesterNodeRenderer
 import de.mr_pine.simplecodetesterplugin.models.result.tree.node.RootResultNode
+import de.mr_pine.simplecodetesterplugin.models.result.tree.node.TimeoutNode
 import de.mr_pine.simplecodetesterplugin.models.result.tree.tree
 import kotlinx.coroutines.flow.Flow
 import java.awt.BorderLayout
@@ -51,6 +52,7 @@ class CodeTesterResultPanel(val project: Project, resultFlow: Flow<Result<CodeTe
             console.clear()
             when(val node = (it.path.lastPathComponent as DefaultMutableTreeNode).userObject) {
                 is CheckResultNode -> console.print(node.content)
+                is TimeoutNode -> console.printTimeout(node.lastRunTest)
                 is RootResultNode -> {
                     node.errorMessage?.let { error -> console.print(error, ConsoleViewContentType.ERROR_OUTPUT) }
                     node.compilationOutput?.let { output -> console.print(output) }
