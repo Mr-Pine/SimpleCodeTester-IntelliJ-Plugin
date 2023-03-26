@@ -46,7 +46,5 @@ open class ResultTreeNode(project: Project, val parentNode: ResultTreeNode?, ope
         protected val NODE_ICON_TIMEOUT: Icon = AllIcons.RunConfigurations.TestSkipped
         @JvmStatic
         protected val NODE_ICON_RUNNING: Icon = AnimatedIcon.Default()
-
-
     }
 }

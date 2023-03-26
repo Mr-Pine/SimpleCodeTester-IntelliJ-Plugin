@@ -8,10 +8,7 @@ open class TimeoutNode(project: Project, parentNode: ResultTreeNode?, val lastRu
     ResultTreeNode(project, parentNode, Duration.ZERO) {
     override val hint = lastRunTest
     override val title = "Timeout"
+    override val success = false
 
-    override fun getCurrentIcon(): Icon {
-        return NODE_ICON_TIMEOUT
-    }
-    override val success: Boolean
-        get() = false
+    override fun getCurrentIcon(): Icon = NODE_ICON_TIMEOUT
 }

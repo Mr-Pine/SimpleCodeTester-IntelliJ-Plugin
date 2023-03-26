@@ -52,9 +52,7 @@ class CodeTesterResultPanel(val project: Project, resultFlow: Flow<Result<CodeTe
             console.clear()
             when(val node = (it.path.lastPathComponent as DefaultMutableTreeNode).userObject) {
                 is CheckResultNode -> console.print(node.content)
-                is TimeoutNode -> {
-                    console.printTimeout(node.lastRunTest)
-                }
+                is TimeoutNode -> console.printTimeout(node.lastRunTest)
                 is RootResultNode -> {
                     node.errorMessage?.let { error -> console.print(error, ConsoleViewContentType.ERROR_OUTPUT) }
                     node.compilationOutput?.let { output -> console.print(output) }
