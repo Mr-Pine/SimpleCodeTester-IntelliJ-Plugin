@@ -7,7 +7,7 @@ plugins {
 
 group = "de.mr-pine"
 
-version = "1.3.02"
+version = "1.4.0"
 
 repositories {
     mavenCentral()
