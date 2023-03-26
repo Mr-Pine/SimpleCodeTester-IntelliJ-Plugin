@@ -5,8 +5,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import de.mr_pine.simplecodetesterplugin.CodeTester
-import de.mr_pine.simplecodetesterplugin.models.result.TestCategory
 import de.mr_pine.simplecodetesterplugin.models.result.CodeTesterResult
+import de.mr_pine.simplecodetesterplugin.models.result.TestCategory
 import de.mr_pine.simplecodetesterplugin.ui.CodeTesterResultPanel
 import de.mr_pine.simplecodetesterplugin.ui.CodeTesterSubmitPanel
 import kotlinx.coroutines.flow.Flow

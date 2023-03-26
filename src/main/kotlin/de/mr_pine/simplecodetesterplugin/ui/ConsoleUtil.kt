@@ -5,6 +5,13 @@ import com.intellij.execution.ui.ConsoleViewContentType
 import de.mr_pine.simplecodetesterplugin.models.result.CompilationOutput
 import de.mr_pine.simplecodetesterplugin.models.result.OutputLine
 
+fun ConsoleView.printTimeout(lastRunTest: String) {
+    val contentType = ConsoleViewContentType.ERROR_OUTPUT
+
+    println("Codetester timed out during test $lastRunTest", contentType)
+    println("Not all tests were run!", contentType)
+}
+
 fun ConsoleView.print(lines: List<OutputLine>) = lines.forEach {
     val contentType = when (it.type) {
         OutputLine.OutputType.PARAMETER -> ConsoleViewContentType.LOG_INFO_OUTPUT

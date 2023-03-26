@@ -3,7 +3,6 @@ package de.mr_pine.simplecodetesterplugin.models.result.tree
 import com.intellij.ide.util.treeView.AbstractTreeStructure
 import com.intellij.ide.util.treeView.NodeDescriptor
 import de.mr_pine.simplecodetesterplugin.models.result.tree.node.ResultTreeNode
-import kotlinx.coroutines.repackaged.net.bytebuddy.implementation.bytecode.Throw
 
 class CodeTesterResultTreeStructure(private val root: ResultTreeNode) : AbstractTreeStructure() {
     override fun getRootElement() = root
