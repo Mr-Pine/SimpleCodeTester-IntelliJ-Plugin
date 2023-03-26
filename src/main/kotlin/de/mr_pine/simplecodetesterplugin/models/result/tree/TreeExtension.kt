@@ -50,8 +50,7 @@ fun Flow<Result<CodeTesterResult>>.tree(project: Project, category: TestCategory
             resultTreeNode.compilationOutput = result.compilationOutput
             println("done")
         } else {
-            resultTreeNode.errorMessage = resultResult.exceptionOrNull()!!
-                .let { error -> "Error ${error::class.qualifiedName} occured: ${error.message}\nat: ${error.stackTraceToString()}" }
+            resultTreeNode.errorMessage = resultResult.exceptionOrNull()!!.message
             resultTreeNode.finish()
         }
     }
