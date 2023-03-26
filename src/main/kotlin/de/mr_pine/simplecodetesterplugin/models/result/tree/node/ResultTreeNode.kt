@@ -6,6 +6,7 @@ import com.intellij.ide.util.treeView.PresentableNodeDescriptor
 import com.intellij.openapi.project.Project
 import com.intellij.ui.AnimatedIcon
 import com.intellij.ui.SimpleTextAttributes
+import de.mr_pine.simplecodetesterplugin.models.result.OutputLine
 import javax.swing.Icon
 import kotlin.time.Duration
 
@@ -16,7 +17,6 @@ open class ResultTreeNode(project: Project, val parentNode: ResultTreeNode?, ope
     open val nodeName: String? = null
     open val success = false
     open val title: String? = null
-    //private val hintData: HintDa
 
     override fun update(presentation: PresentationData) {
         presentation.apply {
@@ -31,6 +31,9 @@ open class ResultTreeNode(project: Project, val parentNode: ResultTreeNode?, ope
     }
 
     override fun getElement() = this
+
+
+    open val output: List<OutputLine> = listOf()
 
     fun add(child: ResultTreeNode) {
         children.add(child)

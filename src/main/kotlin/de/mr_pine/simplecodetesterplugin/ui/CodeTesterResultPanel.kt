@@ -1,7 +1,6 @@
 package de.mr_pine.simplecodetesterplugin.ui
 
 import com.intellij.execution.filters.TextConsoleBuilderFactory
-import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ComponentContainer
 import com.intellij.ui.AnimatedIcon
@@ -20,10 +19,9 @@ import com.intellij.util.ui.tree.TreeUtil
 import de.mr_pine.simplecodetesterplugin.models.result.CodeTesterResult
 import de.mr_pine.simplecodetesterplugin.models.result.TestCategory
 import de.mr_pine.simplecodetesterplugin.models.result.tree.CodeTesterResultTreeStructure
-import de.mr_pine.simplecodetesterplugin.models.result.tree.node.CheckResultNode
 import de.mr_pine.simplecodetesterplugin.models.result.tree.node.CodeTesterNodeRenderer
+import de.mr_pine.simplecodetesterplugin.models.result.tree.node.ResultTreeNode
 import de.mr_pine.simplecodetesterplugin.models.result.tree.node.RootResultNode
-import de.mr_pine.simplecodetesterplugin.models.result.tree.node.TimeoutNode
 import de.mr_pine.simplecodetesterplugin.models.result.tree.tree
 import kotlinx.coroutines.flow.Flow
 import java.awt.BorderLayout
@@ -33,7 +31,11 @@ import javax.swing.JComponent
 import javax.swing.JPanel
 import javax.swing.tree.DefaultMutableTreeNode
 
-class CodeTesterResultPanel(val project: Project, resultFlow: Flow<Result<CodeTesterResult>>, testCategory: TestCategory) : ComponentContainer {
+class CodeTesterResultPanel(
+    val project: Project,
+    resultFlow: Flow<Result<CodeTesterResult>>,
+    testCategory: TestCategory
+) : ComponentContainer {
 
     private val panel = JPanel(BorderLayout())
     private var tree: Tree
@@ -50,14 +52,8 @@ class CodeTesterResultPanel(val project: Project, resultFlow: Flow<Result<CodeTe
 
         tree.addTreeSelectionListener {
             console.clear()
-            when(val node = (it.path.lastPathComponent as DefaultMutableTreeNode).userObject) {
-                is CheckResultNode -> console.print(node.content)
-                is TimeoutNode -> console.printTimeout(node.lastRunTest)
-                is RootResultNode -> {
-                    node.errorMessage?.let { error -> console.print(error, ConsoleViewContentType.ERROR_OUTPUT) }
-                    node.compilationOutput?.let { output -> console.print(output) }
-                }
-            }
+            val node = (it.path.lastPathComponent as DefaultMutableTreeNode).userObject
+            if (node is ResultTreeNode) console.print(node.output)
         }
 
         val scrollPane = ScrollPaneFactory.createScrollPane(tree, SideBorder.NONE)
