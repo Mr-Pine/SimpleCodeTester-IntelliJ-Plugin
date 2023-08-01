@@ -30,12 +30,12 @@ import kotlinx.serialization.json.Json
 import kotlin.time.Duration.Companion.milliseconds
 
 object CodeTester {
-    private const val testIdProperty = "de.mr_pine.simplecodetesterplugin.testId"
+    private const val TEST_ID_PROPERTY = "de.mr_pine.simplecodetesterplugin.testId"
 
     private val logger = Logger.getInstance(CodeTester.javaClass).apply { setLevel(LogLevel.DEBUG) }
     private var propertiesComponent: PropertiesComponent? = null
 
-    private const val url = "https://codetester.ialistannen.de"
+    private const val URL = "https://codetester.ialistannen.de"
     private val client = HttpClient(Java) {
         engine {
             protocolVersion = java.net.http.HttpClient.Version.HTTP_2
@@ -60,7 +60,7 @@ object CodeTester {
                 refreshTokens {
                     CodeTesterCredentials[CodeTesterCredentials.CredentialType.REFRESH_TOKEN]?.let { refreshToken ->
                         val refreshResult =
-                            client.submitForm(url = "$url/login/get-access-token", formParameters = Parameters.build {
+                            client.submitForm(url = "$URL/login/get-access-token", formParameters = Parameters.build {
                                 append("refreshToken", refreshToken)
                             }) { markAsRefreshTokenRequest() }
 
@@ -85,7 +85,7 @@ object CodeTester {
     )
 
     suspend fun login(username: String, password: String) {
-        val loginInfo: LoginInfo = client.submitForm(url = "$url/login", formParameters = Parameters.build {
+        val loginInfo: LoginInfo = client.submitForm(url = "$URL/login", formParameters = Parameters.build {
             append("username", username)
             append("password", password)
         }).body()
@@ -131,7 +131,7 @@ object CodeTester {
 
     suspend fun getCategories() {
         val result = client.get(
-            "$url/check-category/get-all"
+            "$URL/check-category/get-all"
         )
         if (result.status != HttpStatusCode.Unauthorized) {
             categories = result.body<List<TestCategory>>().reversed()
@@ -144,7 +144,7 @@ object CodeTester {
     var currentCategory: TestCategory? = null
         set(value) {
             field = value
-            if (value != null) propertiesComponent?.setValue(testIdProperty, value.id, -1)
+            if (value != null) propertiesComponent?.setValue(TEST_ID_PROPERTY, value.id, -1)
         }
 
     suspend fun submitFiles(
@@ -154,7 +154,7 @@ object CodeTester {
         launch {
 
             try {
-                val response = client.submitFormWithBinaryData(url = "$url/test/multiple/${category.id}", formData {
+                val response = client.submitFormWithBinaryData(url = "$URL/test/multiple/${category.id}", formData {
                     files.forEach { file ->
                         append(file.name, file.contentsToByteArray(), Headers.build {
                             append(HttpHeaders.ContentType, ContentType.Application.OctetStream)
@@ -206,7 +206,7 @@ object CodeTester {
 
     fun loadProperties(project: Project?) {
         propertiesComponent = project?.let { PropertiesComponent.getInstance(it) } ?: PropertiesComponent.getInstance()
-        val testId = propertiesComponent?.getInt(testIdProperty, -1)?.takeIf { it >= 0 }
+        val testId = propertiesComponent?.getInt(TEST_ID_PROPERTY, -1)?.takeIf { it >= 0 }
         val category = categories.find { it.id == testId }
         if (testId != null && category != null) {
             currentCategory = category
