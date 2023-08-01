@@ -19,7 +19,7 @@ class CodeTesterToolWindowFactory : ToolWindowFactory, DumbAware {
             isCloseable = false
         }
         val submitContent =
-            contentManager.factory.createContent(CodeTesterSubmitPanel(project), "Submit", false).apply {
+            contentManager.factory.createContent(CodeTesterSubmitPanel(), "Submit", false).apply {
                 isCloseable = false
             }
 

@@ -13,7 +13,7 @@ class CodeTesterActionToolBar(orientation: ToolBarOrientation, place: @NonNls St
 
     val setTargetComponent = toolbar::setTargetComponent
 
-    val component
+    val component: Box
         get() = Box.createHorizontalBox().apply { add(toolbar.component) }
 }
 

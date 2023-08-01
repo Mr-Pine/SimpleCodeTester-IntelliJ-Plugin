@@ -5,7 +5,7 @@ import de.mr_pine.simplecodetesterplugin.models.result.OutputLine
 import javax.swing.Icon
 import kotlin.time.Duration
 
-open class TimeoutNode(project: Project, parentNode: ResultTreeNode?, val lastRunTest: String) :
+open class TimeoutNode(project: Project, parentNode: ResultTreeNode?, private val lastRunTest: String) :
     ResultTreeNode(project, parentNode, Duration.ZERO) {
     override val hint = lastRunTest
     override val title = "Timeout"
